@@ -1,0 +1,558 @@
+<Border xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="RootBorder"
+        Margin="2" CornerRadius="14" BorderThickness="1" BorderBrush="#1E222A">
+  <Border.Background>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#0B0C10" Offset="0" />
+      <GradientStop Color="#161A22" Offset="0.52" />
+      <GradientStop Color="#0A0B0E" Offset="1" />
+    </LinearGradientBrush>
+  </Border.Background>
+  <Border.Effect>
+    <DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.55" Color="#000000" />
+  </Border.Effect>
+
+  <Border.Resources>
+
+    <!-- ============ Fircalar ============ -->
+    <LinearGradientBrush x:Key="AccentGrad" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#F5F6F8" Offset="0" />
+      <GradientStop Color="#B4BAC4" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LogoGrad" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#FFFFFF" Offset="0" />
+      <GradientStop Color="#565D69" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CardGrad" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#13161C" Offset="0" />
+      <GradientStop Color="#0D0F14" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="PreviewGrad" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#0A0B0E" Offset="0" />
+      <GradientStop Color="#101319" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="TextPrimary"   Color="#ECEEF1" />
+    <SolidColorBrush x:Key="TextSecondary" Color="#9AA1AC" />
+    <SolidColorBrush x:Key="TextMuted"     Color="#5F6672" />
+    <SolidColorBrush x:Key="CardBorder"    Color="#20242C" />
+    <SolidColorBrush x:Key="FieldBg"       Color="#0B0D11" />
+    <SolidColorBrush x:Key="FieldBorder"   Color="#232833" />
+
+    <!-- ============ Baslik ============ -->
+    <Style x:Key="CardTitle" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="2,0,0,10" />
+    </Style>
+    <Style x:Key="FieldLabel" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource TextMuted}" />
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="Margin" Value="2,0,0,5" />
+    </Style>
+    <Style x:Key="ValueLabel" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="Width" Value="42" />
+      <Setter Property="TextAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="Card" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource CardGrad}" />
+      <Setter Property="BorderBrush" Value="{StaticResource CardBorder}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="14" />
+      <Setter Property="Margin" Value="0,0,0,10" />
+    </Style>
+
+    <!-- ============ Butonlar ============ -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+      <Setter Property="Height" Value="42" />
+      <Setter Property="Foreground" Value="#0A0B0D" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="10" Background="{StaticResource AccentGrad}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Opacity" Value="0.92" /></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="Opacity" Value="0.78" /></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Opacity" Value="0.35" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button">
+      <Setter Property="Height" Value="34" />
+      <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="9" Background="#15181D" BorderBrush="#252A32" BorderThickness="1" Padding="12,0">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#1C2028" /><Setter TargetName="Bd" Property="BorderBrush" Value="#343A45" /></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="Background" Value="#111317" /></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Opacity" Value="0.4" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="ChromeButton" TargetType="Button">
+      <Setter Property="Width" Value="34" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="7">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#20242C" /><Setter Property="Foreground" Value="{StaticResource TextPrimary}" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource ChromeButton}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="7">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#C0444B" /><Setter Property="Foreground" Value="#FFFFFF" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ Metin kutusu ============ -->
+    <Style x:Key="DarkTextBox" TargetType="TextBox">
+      <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+      <Setter Property="CaretBrush" Value="{StaticResource TextPrimary}" />
+      <Setter Property="SelectionBrush" Value="#3A4250" />
+      <Setter Property="Height" Value="34" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Padding" Value="11,0" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="TextBox">
+            <Border x:Name="Bd" Background="{StaticResource FieldBg}" BorderBrush="{StaticResource FieldBorder}" BorderThickness="1" CornerRadius="8">
+              <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="#3C4450" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ ComboBox ============ -->
+    <Style x:Key="ComboItem" TargetType="ComboBoxItem">
+      <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Padding" Value="11,8" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBoxItem">
+            <Border x:Name="B" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="7" Margin="4,1">
+              <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="B" Property="Background" Value="#232830" /></Trigger>
+              <Trigger Property="IsSelected" Value="True"><Setter TargetName="B" Property="Background" Value="#2C323C" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="DarkCombo" TargetType="ComboBox">
+      <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+      <Setter Property="Height" Value="34" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="ItemContainerStyle" Value="{StaticResource ComboItem}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBox">
+            <Grid>
+              <Border x:Name="Bd" Background="{StaticResource FieldBg}" BorderBrush="{StaticResource FieldBorder}" BorderThickness="1" CornerRadius="8">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="28" />
+                  </Grid.ColumnDefinitions>
+                  <ContentPresenter Margin="11,0,0,0" VerticalAlignment="Center"
+                                    Content="{TemplateBinding SelectionBoxItem}"
+                                    ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+                  <Path Grid.Column="1" Data="M0,0 L4.5,4.5 L9,0" Stroke="{StaticResource TextMuted}" StrokeThickness="1.6"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <ToggleButton Focusable="False" ClickMode="Press" Background="Transparent"
+                            IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                <ToggleButton.Template>
+                  <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="Transparent" />
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+              <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom"
+                     IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Fade">
+                <Border Background="#14171D" BorderBrush="#2A2F38" BorderThickness="1" CornerRadius="9"
+                        Margin="0,4,0,0" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                  <ScrollViewer MaxHeight="230" Margin="0,4">
+                    <ItemsPresenter />
+                  </ScrollViewer>
+                </Border>
+              </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="#39404B" /></Trigger>
+              <Trigger Property="IsDropDownOpen" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="#454C58" /></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ Kaydirici ============ -->
+    <Style x:Key="SliderTrack" TargetType="RepeatButton">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RepeatButton">
+            <Border Background="#20242C" Height="4" CornerRadius="2" VerticalAlignment="Center" />
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="SliderFill" TargetType="RepeatButton">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RepeatButton">
+            <Border Background="#C9CDD4" Height="4" CornerRadius="2" VerticalAlignment="Center" />
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="DarkSlider" TargetType="Slider">
+      <Setter Property="Height" Value="22" />
+      <Setter Property="MinWidth" Value="90" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Slider">
+            <Grid VerticalAlignment="Center">
+              <Track x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource SliderFill}" />
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource SliderTrack}" />
+                </Track.IncreaseRepeatButton>
+                <Track.Thumb>
+                  <Thumb Width="16" Height="16">
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Ellipse x:Name="Kn" Fill="#EDEEF1" Width="16" Height="16" />
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Kn" Property="Fill" Value="#FFFFFF" /></Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ Anahtar (switch) ============ -->
+    <Style x:Key="Switch" TargetType="ToggleButton">
+      <Setter Property="Width" Value="42" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <Border x:Name="Track" CornerRadius="12" Background="#262B34">
+              <Ellipse x:Name="Knob" Width="18" Height="18" Fill="#7A828E" HorizontalAlignment="Left" Margin="3,0,0,0" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="Track" Property="Background" Value="#E7E9EC" />
+                <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right" />
+                <Setter TargetName="Knob" Property="Margin" Value="0,0,3,0" />
+                <Setter TargetName="Knob" Property="Fill" Value="#0C0E12" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ Kaydirma cubugu ============ -->
+    <Style x:Key="ScrollThumb" TargetType="Thumb">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Thumb">
+            <Border Background="#2E333C" CornerRadius="4" Margin="1" />
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="ScrollPage" TargetType="RepeatButton">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RepeatButton">
+            <Border Background="Transparent" />
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="DarkScrollBar" TargetType="ScrollBar">
+      <Setter Property="Width" Value="8" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+            <Grid Background="Transparent">
+              <Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb>
+                  <Thumb Style="{StaticResource ScrollThumb}" />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="ScrollBar.PageDownCommand" Style="{StaticResource ScrollPage}" />
+                </Track.IncreaseRepeatButton>
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="ScrollBar.PageUpCommand" Style="{StaticResource ScrollPage}" />
+                </Track.DecreaseRepeatButton>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- ============ Gunluk ============ -->
+    <Style x:Key="LogItem" TargetType="ListBoxItem">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+      <Setter Property="FontFamily" Value="Consolas" />
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="Padding" Value="1,2" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+              <ContentPresenter />
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+  </Border.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="46" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- ======================= Baslik cubugu ======================= -->
+    <Grid Grid.Row="0" x:Name="TitleBar" Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <StackPanel Orientation="Horizontal" Margin="18,0,0,0" VerticalAlignment="Center">
+        <Border Width="20" Height="20" CornerRadius="6" Background="{StaticResource LogoGrad}" />
+        <TextBlock Text="Umbra" FontSize="14.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimary}"
+                   Margin="10,0,0,0" VerticalAlignment="Center" />
+        <TextBlock x:Name="LblTagline" Text="ikinci ekran, kablosuz" FontSize="11.5" Foreground="{StaticResource TextMuted}"
+                   Margin="10,1,0,0" VerticalAlignment="Center" />
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+        <ComboBox x:Name="LangCombo" Style="{StaticResource DarkCombo}" Width="116" Height="30" Margin="0,0,10,0" />
+        <Button x:Name="BtnMin" Style="{StaticResource ChromeButton}" Content="&#x2013;" />
+        <Button x:Name="BtnMax" Style="{StaticResource ChromeButton}" Content="&#x25A1;" Margin="4,0,0,0" />
+        <Button x:Name="BtnClose" Style="{StaticResource CloseButton}" Content="&#x2715;" Margin="4,0,0,0" />
+      </StackPanel>
+    </Grid>
+
+    <!-- ======================= Govde ======================= -->
+    <Grid Grid.Row="1" Margin="18,2,18,18">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="336" />
+        <ColumnDefinition Width="14" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Sol sutun -->
+      <DockPanel Grid.Column="0">
+        <Button x:Name="BtnStart" DockPanel.Dock="Bottom" Style="{StaticResource PrimaryButton}"
+                Content="Yayin&#x131; Ba&#x15F;lat" Margin="0,4,0,0" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,2,0">
+          <ScrollViewer.Resources>
+            <Style TargetType="ScrollBar" BasedOn="{StaticResource DarkScrollBar}" />
+          </ScrollViewer.Resources>
+          <StackPanel>
+
+            <!-- Yayin karti -->
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock x:Name="LblStatusTitle" Style="{StaticResource CardTitle}" Text="YAYIN DURUMU" />
+                <StackPanel Orientation="Horizontal" Margin="2,0,0,12">
+                  <Ellipse x:Name="StatusDot" Width="9" Height="9" Fill="#3A3F49" VerticalAlignment="Center" />
+                  <TextBlock x:Name="StatusText" Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold"
+                             Margin="9,0,0,0" VerticalAlignment="Center" Text="Beklemede" />
+                </StackPanel>
+                <TextBlock x:Name="LblUrlLabel" Style="{StaticResource FieldLabel}" Text="Taray&#x131;c&#x131; adresi" />
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <TextBox x:Name="UrlBox" Style="{StaticResource DarkTextBox}" IsReadOnly="True" Text="http://127.0.0.1:8777/" />
+                  <Button x:Name="BtnCopy" Grid.Column="1" Style="{StaticResource GhostButton}" Content="Kopyala" Margin="8,0,0,0" />
+                </Grid>
+                <Button x:Name="BtnOpen" Style="{StaticResource GhostButton}" Content="Taray&#x131;c&#x131;da a&#xE7;" Margin="0,8,0,0" />
+              </StackPanel>
+            </Border>
+
+            <!-- Ekran karti -->
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <Grid>
+                  <TextBlock x:Name="LblScreenTitle" Style="{StaticResource CardTitle}" Text="EKRAN" />
+                  <Button x:Name="BtnRefresh" Style="{StaticResource GhostButton}" Content="Yenile" Height="26"
+                          HorizontalAlignment="Right" Margin="0,-6,0,6" />
+                </Grid>
+                <TextBlock x:Name="LblMonitorLabel" Style="{StaticResource FieldLabel}" Text="Kaynak ekran" />
+                <ComboBox x:Name="MonitorCombo" Style="{StaticResource DarkCombo}" />
+                <TextBlock x:Name="LblResLabel" Style="{StaticResource FieldLabel}" Text="&#xC7;&#xF6;z&#xFC;n&#xFC;rl&#xFC;k" Margin="2,12,0,5" />
+                <ComboBox x:Name="ResCombo" Style="{StaticResource DarkCombo}" />
+                <Button x:Name="BtnApplyRes" Style="{StaticResource GhostButton}" Content="&#xC7;&#xF6;z&#xFC;n&#xFC;rl&#xFC;&#x11F;&#x131; uygula" Margin="0,8,0,0" />
+              </StackPanel>
+            </Border>
+
+            <!-- Kalite karti -->
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock x:Name="LblQualityTitle" Style="{StaticResource CardTitle}" Text="AKI&#x15E; VE KAL&#x130;TE" />
+
+                <Grid>
+                  <TextBlock x:Name="LblFpsLabel" Style="{StaticResource FieldLabel}" Text="Kare h&#x131;z&#x131;" />
+                  <TextBlock x:Name="FpsValue" Style="{StaticResource ValueLabel}" HorizontalAlignment="Right" Text="30" />
+                </Grid>
+                <Slider x:Name="FpsSlider" Style="{StaticResource DarkSlider}" Minimum="5" Maximum="60" Value="30" TickFrequency="1" IsSnapToTickEnabled="True" />
+
+                <Grid Margin="0,10,0,0">
+                  <TextBlock x:Name="LblQLabel" Style="{StaticResource FieldLabel}" Text="JPEG kalitesi" />
+                  <TextBlock x:Name="QualityValue" Style="{StaticResource ValueLabel}" HorizontalAlignment="Right" Text="72" />
+                </Grid>
+                <Slider x:Name="QualitySlider" Style="{StaticResource DarkSlider}" Minimum="20" Maximum="95" Value="72" TickFrequency="1" IsSnapToTickEnabled="True" />
+
+                <Grid Margin="0,10,0,0">
+                  <TextBlock x:Name="LblScaleLabel" Style="{StaticResource FieldLabel}" Text="&#xD6;l&#xE7;ek (bant geni&#x15F;li&#x11F;i)" />
+                  <TextBlock x:Name="ScaleValue" Style="{StaticResource ValueLabel}" HorizontalAlignment="Right" Text="1.00" />
+                </Grid>
+                <Slider x:Name="ScaleSlider" Style="{StaticResource DarkSlider}" Minimum="0.3" Maximum="1.0" Value="1.0" TickFrequency="0.05" />
+              </StackPanel>
+            </Border>
+
+            <!-- Kontrol karti -->
+            <Border Style="{StaticResource Card}">
+              <StackPanel>
+                <TextBlock x:Name="LblControlTitle" Style="{StaticResource CardTitle}" Text="UZAKTAN KONTROL" />
+                <Grid>
+                  <TextBlock x:Name="LblInputLabel" Text="Dokunmatik / fare kontrol&#xFC;" Foreground="{StaticResource TextPrimary}" FontSize="12.5" VerticalAlignment="Center" />
+                  <ToggleButton x:Name="InputSwitch" Style="{StaticResource Switch}" HorizontalAlignment="Right" IsChecked="True" />
+                </Grid>
+                <Grid Margin="0,14,0,0">
+                  <TextBlock x:Name="LblVdLabel" Text="Sanal ekran&#x131; otomatik olu&#x15F;tur/kapat" Foreground="{StaticResource TextPrimary}" FontSize="12.5" VerticalAlignment="Center" TextWrapping="Wrap" />
+                  <ToggleButton x:Name="VdSwitch" Style="{StaticResource Switch}" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="True" />
+                </Grid>
+                <TextBlock x:Name="LblModeLabel" Style="{StaticResource FieldLabel}" Text="Girdi kipi" Margin="2,14,0,5" />
+                <ComboBox x:Name="ModeCombo" Style="{StaticResource DarkCombo}" SelectedIndex="0">
+                  <ComboBoxItem Content="Dokunmatik (&#xE7;oklu parmak)" />
+                  <ComboBoxItem Content="Fare imleci" />
+                </ComboBox>
+                <TextBlock x:Name="LblPortLabel" Style="{StaticResource FieldLabel}" Text="Ba&#x11F;lant&#x131; noktas&#x131; (port)" Margin="2,14,0,5" />
+                <TextBox x:Name="PortBox" Style="{StaticResource DarkTextBox}" Text="8777" />
+                <TextBlock x:Name="LblTip" Foreground="{StaticResource TextMuted}" FontSize="11" TextWrapping="Wrap" Margin="2,10,0,0"
+                           Text="&#x130;pucu: Bilgisayarda yeni bir sanal ekran tan&#x131;ml&#x131;ysa p&#xE7;nin 2. ekran&#x131;n&#x131; se&#xE7;ip yay&#x131;nlay&#x131;n. Telefon veya tablet ayn&#x131; a&#x11F;dan taray&#x131;c&#x131; ile ba&#x11F;lan&#x131;r." />
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+
+      <!-- Sag sutun -->
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="14" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0">
+          <StackPanel>
+            <TextBlock x:Name="LblPreviewTitle" Style="{StaticResource CardTitle}" Text="&#xD6;N&#x130;ZLEME" />
+            <Border CornerRadius="9" BorderBrush="#20242C" BorderThickness="1" Background="{StaticResource PreviewGrad}" Height="250">
+              <Grid>
+                <Image x:Name="PreviewImage" Stretch="Uniform" RenderOptions.BitmapScalingMode="LowQuality" />
+                <TextBlock x:Name="PreviewHint" Text="Yay&#x131;n ba&#x15F;lat&#x131;ld&#x131;&#x11F;&#x131;nda burada g&#xF6;r&#xFC;n&#xFC;r"
+                           Foreground="{StaticResource TextMuted}" FontSize="12"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0">
+          <DockPanel>
+            <TextBlock x:Name="LblLogTitle" DockPanel.Dock="Top" Style="{StaticResource CardTitle}" Text="G&#xDC;NL&#xDC;K" />
+            <ListBox x:Name="LogList" Background="Transparent" BorderThickness="0"
+                     ItemContainerStyle="{StaticResource LogItem}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     VirtualizingPanel.IsVirtualizing="False">
+              <ListBox.Resources>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource DarkScrollBar}" />
+              </ListBox.Resources>
+            </ListBox>
+          </DockPanel>
+        </Border>
+      </Grid>
+    </Grid>
+  </Grid>
+</Border>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0b0e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Umbra · İkinci Ekran</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="stage">
+  <img id="screen" alt="" draggable="false">
+
+  <div id="overlay">
+    <div class="card">
+      <div class="mark"></div>
+      <h1>Umbra</h1>
+      <p id="overlayText">Sunucuya bağlanılıyor…</p>
+      <button id="retry" class="primary" data-i18n="retry">Yeniden dene</button>
+    </div>
+  </div>
+
+  <div id="stats" class="hidden">
+    <div><span data-i18n="stat.state">Durum</span><b id="sState">—</b></div>
+    <div><span data-i18n="stat.res">Çözünürlük</span><b id="sRes">—</b></div>
+    <div><span data-i18n="stat.fps">Kare hızı</span><b id="sFps">—</b></div>
+    <div><span data-i18n="stat.data">Veri</span><b id="sNet">—</b></div>
+    <div><span data-i18n="stat.ping">Gecikme</span><b id="sPing">—</b></div>
+  </div>
+
+  <div id="toolbar">
+    <div class="group">
+      <span class="dot" id="dot"></span>
+      <span class="brand">Umbra</span>
+      <span class="hint" id="hint"></span>
+    </div>
+    <div class="group">
+      <button class="btn" id="btnFit">Sığdır</button>
+      <button class="btn" id="btnFull">Tam ekran</button>
+      <button class="btn" id="btnStats" data-i18n="btn.stats">Bilgi</button>
+      <button class="btn" id="btnKeys">Klavye: kapalı</button>
+      <button class="btn" id="btnPanel" data-i18n="btn.panel">Ayarlar</button>
+      <button class="btn" id="btnLang" title="Türkçe / English">EN</button>
+    </div>
+  </div>
+
+  <div id="panel" class="hidden">
+    <div class="panel-head">
+      <b data-i18n="panel.title">Ayarlar</b>
+      <button class="btn ghost" id="panelClose" data-i18n="panel.close">Kapat</button>
+    </div>
+
+    <div class="row">
+      <span data-i18n="row.display">Görüntü</span>
+      <div class="seg" id="segFit">
+        <button data-fit="contain" data-i18n="fit.contain">Sığdır</button>
+        <button data-fit="cover" data-i18n="fit.cover">Doldur</button>
+        <button data-fit="none" data-i18n="fit.none">1:1</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <span data-i18n="row.control">Kontrol</span>
+      <div class="seg" id="segControl">
+        <button data-m="touch" data-i18n="ctrl.touch">Dokunmatik</button>
+        <button data-m="mouse" data-i18n="ctrl.mouse">Fare</button>
+      </div>
+    </div>
+
+    <div class="row"><span data-i18n="row.quality">Kalite</span><input type="range" id="q" min="20" max="95" step="1"><b id="qVal">—</b></div>
+    <div class="row"><span data-i18n="row.fps">Kare hızı</span><input type="range" id="f" min="5" max="60" step="1"><b id="fVal">—</b></div>
+    <div class="row"><span data-i18n="row.scale">Ölçek</span><input type="range" id="s" min="0.3" max="1" step="0.05"><b id="sVal">—</b></div>
+
+    <div class="row">
+      <span data-i18n="row.keyboard">Klavye aktarımı</span>
+      <div class="seg" id="segKeys">
+        <button data-k="1" data-i18n="seg.on">Açık</button>
+        <button data-k="0" data-i18n="seg.off">Kapalı</button>
+      </div>
+    </div>
+
+    <p class="note" data-i18n="note">Ayarlar bu oturum boyunca geçerlidir ve sunucuya anında uygulanır.</p>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

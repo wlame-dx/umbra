@@ -1,0 +1,20 @@
+# Derleme çıktıları
+umbra/host/dist/
+umbra/host/build/
+
+# Üretilen dosyalar
+umbra/host/tools/*.exe
+umbra/setup/BuildInfo.g.cs
+
+# Günlükler
+umbra.log
+*.log
+
+# Node / paket yöneticisi artıkları
+node_modules/
+package-lock.json
+
+# Editör
+.vscode/
+.idea/
+*.user

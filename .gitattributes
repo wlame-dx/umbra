@@ -1,0 +1,16 @@
+# Satır sonlarını normalleştir
+* text=auto
+*.ps1 text
+*.cmd text
+*.cs text
+*.js text
+*.mjs text
+*.html text
+*.css text
+*.md text
+*.xaml text
+*.svg text
+*.json text
+*.yml text
+*.ico binary
+*.png binary
