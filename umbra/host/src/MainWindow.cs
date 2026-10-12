@@ -55,6 +55,7 @@ namespace Umbra
         private TextBlock _scaleValue;
         private ToggleButton _inputSwitch;
         private ToggleButton _vdSwitch;
+        private Button _btnGetDriver;
         private TextBox _portBox;
         private Button _startButton;
         private Button _btnMax;
@@ -138,6 +139,7 @@ namespace Umbra
             _scaleValue = Find<TextBlock>("ScaleValue");
             _inputSwitch = Find<ToggleButton>("InputSwitch");
             _vdSwitch = Find<ToggleButton>("VdSwitch");
+            _btnGetDriver = Find<Button>("BtnGetDriver");
             _portBox = Find<TextBox>("PortBox");
             _startButton = Find<Button>("BtnStart");
             _btnMax = Find<Button>("BtnMax");
@@ -162,6 +164,7 @@ namespace Umbra
             _scale.ValueChanged += delegate { _scaleValue.Text = _scale.Value.ToString("0.00", CultureInfo.InvariantCulture); PushSettings(); };
             _inputSwitch.Click += delegate { PushSettings(); };
             if (_vdSwitch != null) _vdSwitch.Click += delegate { PushSettings(); };
+            if (_btnGetDriver != null) _btnGetDriver.Click += delegate { DownloadDriver(); };
             _modeCombo.SelectionChanged += delegate { PushSettings(); };
             _monitorCombo.SelectionChanged += OnMonitorChanged;
             _portBox.TextChanged += delegate { UpdateUrl(); };
@@ -388,6 +391,8 @@ namespace Umbra
             SetText("LblControlTitle", "control.title");
             SetText("LblInputLabel", "control.input");
             SetText("LblVdLabel", "control.vd");
+            SetContent("BtnGetDriver", "control.getdriver");
+            SetText("LblDriverHint", "control.driver_hint");
             SetText("LblModeLabel", "control.mode");
             SetText("LblPortLabel", "control.port");
             SetText("LblTip", "control.tip");
@@ -593,6 +598,44 @@ namespace Umbra
         // ------------------------------------------------------------------
         //  Sanal ekran (arka planda)
         // ------------------------------------------------------------------
+
+        /// <summary>
+        /// vdriver\get-driver.ps1 betigini gorunur bir PowerShell penceresinde
+        /// calistirir. Betik acik kaynak surucuyu indirip vdriver\bin'e koyar.
+        /// </summary>
+        private void DownloadDriver()
+        {
+            if (VdController.IsDriverReady())
+            {
+                UmbDialog.Warn(this, I18n.T("dlg.driver_title"), I18n.T("dlg.driver_ready"));
+                return;
+            }
+
+            string script = VdController.ScriptPath("get-driver.ps1");
+            if (script == null)
+            {
+                UmbDialog.Warn(this, I18n.T("dlg.driver_title"), I18n.T("dlg.driver_noscript"));
+                return;
+            }
+
+            if (!UmbDialog.Confirm(this, I18n.T("dlg.driver_title"), I18n.T("dlg.driver_msg")))
+                return;
+
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo();
+                psi.FileName = "powershell.exe";
+                psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -NoExit -File \"" + script + "\"";
+                psi.UseShellExecute = true;
+                psi.WorkingDirectory = VdController.ScriptDirPath;
+                System.Diagnostics.Process.Start(psi);
+                Log.Info(I18n.T("log.driver_started"));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(I18n.F("log.driver_fail", ex.Message));
+            }
+        }
 
         private void StartVirtualDisplay()
         {

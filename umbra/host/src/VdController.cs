@@ -23,6 +23,23 @@ namespace Umbra
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "vdriver"); }
         }
 
+        /// <summary>vdriver klasorunun yolu.</summary>
+        public static string ScriptDirPath
+        {
+            get { return ScriptDir; }
+        }
+
+        /// <summary>vdriver icindeki bir betigin tam yolu; yoksa null.</summary>
+        public static string ScriptPath(string fileName)
+        {
+            try
+            {
+                string path = Path.Combine(ScriptDir, fileName);
+                return File.Exists(path) ? path : null;
+            }
+            catch { return null; }
+        }
+
         private static string BinDir
         {
             get { return Path.Combine(ScriptDir, "bin"); }

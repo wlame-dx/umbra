@@ -506,6 +506,10 @@
                   <TextBlock x:Name="LblVdLabel" Text="Sanal ekran&#x131; otomatik olu&#x15F;tur/kapat" Foreground="{StaticResource TextPrimary}" FontSize="12.5" VerticalAlignment="Center" TextWrapping="Wrap" />
                   <ToggleButton x:Name="VdSwitch" Style="{StaticResource Switch}" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="True" />
                 </Grid>
+                <Button x:Name="BtnGetDriver" Style="{StaticResource GhostButton}" Height="30" FontSize="11.5" HorizontalAlignment="Left" Margin="0,8,0,0"
+                        Content="Sanal ekran s&#xFC;r&#xFC;c&#xFC;s&#xFC;n&#xFC; indir" />
+                <TextBlock x:Name="LblDriverHint" Foreground="{StaticResource TextMuted}" FontSize="10.5" TextWrapping="Wrap" Margin="2,6,0,0"
+                           Text="S&#xFC;r&#xFC;c&#xFC; dosyalar&#x131; yoksa buradan indirin. Kurulumu yay&#x131;n ba&#x15F;larken Umbra yapar." />
                 <TextBlock x:Name="LblModeLabel" Style="{StaticResource FieldLabel}" Text="Girdi kipi" Margin="2,14,0,5" />
                 <ComboBox x:Name="ModeCombo" Style="{StaticResource DarkCombo}" SelectedIndex="0">
                   <ComboBoxItem Content="Dokunmatik (&#xE7;oklu parmak)" />

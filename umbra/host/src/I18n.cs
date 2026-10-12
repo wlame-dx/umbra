@@ -48,6 +48,12 @@ namespace Umbra
             { "control.mode.mouse",   new[] { "Fare imleci", "Mouse cursor" } },
             { "control.port",         new[] { "Bağlantı noktası (port)", "Port" } },
             { "control.vd",           new[] { "Sanal ekranı otomatik oluştur/kapat", "Auto create virtual display" } },
+            { "control.getdriver",    new[] { "Sanal ekran sürücüsünü indir", "Download virtual display driver" } },
+            { "control.driver_hint",  new[]
+                {
+                    "Sürücü dosyaları yoksa buradan indirin. Kurulumu yayın başlarken Umbra yapar.",
+                    "If the driver files are missing, download them here. Umbra installs it when the stream starts."
+                } },
             { "control.tip",          new[]
                 {
                     "İpucu: Sanal ekran sürücüsü kuruluysa ikinci ekranı seçip yayınlayın. Telefon veya tablet aynı ağdan tarayıcıyla bağlanır.",
@@ -72,6 +78,22 @@ namespace Umbra
                 } },
             { "dlg.yes",              new[] { "Evet", "Yes" } },
             { "dlg.no",               new[] { "Hayır", "No" } },
+            { "dlg.driver_title",     new[] { "Sanal ekran sürücüsü", "Virtual display driver" } },
+            { "dlg.driver_msg",       new[]
+                {
+                    "Açık kaynak Virtual-Display-Driver sürümü GitHub'dan indirilip vdriver\\bin klasörüne konacak. Bir PowerShell penceresi açılacak. Devam edilsin mi?",
+                    "The open-source Virtual-Display-Driver release will be downloaded from GitHub into the vdriver\\bin folder. A PowerShell window will open. Continue?"
+                } },
+            { "dlg.driver_ready",     new[]
+                {
+                    "Sürücü dosyaları zaten yerinde. Yayını başlattığınızda Umbra kurulumu dener.",
+                    "The driver files are already in place. Umbra will try to install it when you start the stream."
+                } },
+            { "dlg.driver_noscript",  new[]
+                {
+                    "vdriver\\get-driver.ps1 bulunamadı. Kurulum klasöründeki vdriver klasörünü kontrol edin.",
+                    "vdriver\\get-driver.ps1 was not found. Check the vdriver folder in the install directory."
+                } },
 
             // --- yayin oncesi uyarilar ---
             { "warn.touch_off",       new[]
@@ -154,6 +176,16 @@ namespace Umbra
                 {
                     "Sanal ekran sürücüsü kurulu değil; mevcut ekran yayınlanıyor. Ayrıntı için vdriver klasörüne bakın.",
                     "No virtual display driver installed; streaming the current screen. See the vdriver folder for details."
+                } },
+            { "log.driver_started",   new[]
+                {
+                    "Sürücü indirme penceresi açıldı. Bitince yayını başlatın.",
+                    "Driver download window opened. Start the stream when it finishes."
+                } },
+            { "log.driver_fail",      new[]
+                {
+                    "Sürücü indirme başlatılamadı: {0}",
+                    "Could not start the driver download: {0}"
                 } },
             { "log.vd_failed",        new[]
                 {

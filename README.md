@@ -99,21 +99,39 @@ betiği düzenleyip tekrar çalıştır, sonra yeniden derle:
 
 Umbra kernel sürücüsü içermez (imzasız sürücü kurulumu Windows'ta hem engellenir hem
 riskli). Bunun yerine açık kaynak bir **IDD (Indirect Display Driver)** ile birlikte
-çalışır ve onu senin yerine yönetir:
+çalışır ve onu senin yerine yönetir.
 
-En kolay yol:
+### En kolay yol: uygulamadan indir
 
-```powershell
-powershell -ExecutionPolicy Bypass -File vdriver\get-driver.ps1
+Umbra'yı aç → **UZAKTAN KONTROL** kartındaki **"Sanal ekran sürücüsünü indir"** düğmesine
+bas → çıkan onayı kabul et. Açılan PowerShell penceresi
+[Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
+sürümünü indirip `vdriver\bin\` içine koyar. Pencere kapanınca **"Sanal ekranı otomatik
+oluştur/kapat"** anahtarı açıkken yayını başlat; Umbra sürücüyü kurar (UAC onayı isteyebilir)
+ve ekran listesinde ikinci monitör belirir.
+
+### Elle indirme
+
+Kurulum sürümünde `vdriver` klasörü şurada olur:
+
+```
+%LOCALAPPDATA%\Programs\Umbra\vdriver
 ```
 
-Bu betik [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
-sürümünü indirip `vdriver\bin\` içine koyar. Elle kurmak istersen açık kaynak sürücülerden
-birini indir (Virtual-Display-Driver veya [usbmmidd](https://github.com/ge9/IddSampleDriver)),
-dosyaları `vdriver\bin\` klasörüne kopyala (ayrıntı: `vdriver\README.md`).
+Taşınabilir (zip) sürümde ise zip'i açtığın `Umbra\vdriver` klasöründe. PowerShell aç ve
+şunu çalıştır (kurulum sürümü için):
 
-Sonra Umbra'da **"Sanal ekranı otomatik oluştur/kapat"** anahtarını açık bırak. Yayını
-başlatınca Umbra `vdriver\create.cmd`'yi (yönetici hakkıyla, UAC onayı isteyebilir)
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\Umbra\vdriver\get-driver.ps1"
+```
+
+Bu betik sürücüyü indirip `vdriver\bin\` içine koyar. İstersen açık kaynak sürücülerden
+birini (Virtual-Display-Driver veya [usbmmidd](https://github.com/ge9/IddSampleDriver))
+indirip `vdriver\bin\` klasörüne elle de kopyalayabilirsin (ayrıntı: `vdriver\README.md`).
+
+### Kurulum nasıl işliyor
+
+Yayını başlatınca Umbra `vdriver\create.cmd`'yi (yönetici hakkıyla, UAC onayı isteyebilir)
 arka planda çalıştırır, sanal ekranı kurar ve monitör listesini tazeler; arayüz donmaz.
 Yayın durunca (ya da uygulama kapanınca) `vdriver\remove.cmd` ile kaldırır. Sürücü dosyaları
 yoksa boşuna UAC açmaz; günlüğe bilgi yazar ve mevcut ekranı yayınlar.
