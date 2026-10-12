@@ -1,6 +1,7 @@
 # Umbra
 
 Bu sistem aynı zamanda vibecoding aracılığıylada desteklenmiştir.
+https://wlame-dx.github.io/umbra/
 
 Windows bilgisayarındaki ekranı, yerel ağ üzerinden telefonuna ya da tabletine akıtan
 küçük bir program. spacedesk'in **filigransız** alternatifi olarak yazıldı:
