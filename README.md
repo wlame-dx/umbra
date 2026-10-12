@@ -1,5 +1,7 @@
 # Umbra
 
+Bu sistem aynı zamanda vibecoding aracılığıylada desteklenmiştir.
+
 Windows bilgisayarındaki ekranı, yerel ağ üzerinden telefonuna ya da tabletine akıtan
 küçük bir program. spacedesk'in **filigransız** alternatifi olarak yazıldı:
 tek dosya, filigran yok, açık kaynak.
