@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Umbra
 {
@@ -18,6 +19,14 @@ namespace Umbra
             var app = new Application();
             app.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
+            // Arayuz thread'inde olusan beklenmeyen bir hata uygulamayi kapatmasin.
+            // Hata gunluge yazilir, uygulama calismaya devam eder.
+            app.DispatcherUnhandledException += delegate(object sender, DispatcherUnhandledExceptionEventArgs e)
+            {
+                Log.Error("Arayuz hatasi (yoksayildi): " + (e.Exception == null ? "?" : e.Exception.ToString()));
+                e.Handled = true;
+            };
+
             MainWindow window;
             try
             {
@@ -31,6 +40,11 @@ namespace Umbra
 
             app.MainWindow = window;
             app.Run(window);
+            Log.Info("Uygulama kapandi.");
+
+            // Arka planda yonetici istemi (UAC) bekleyen bir is parcacigi olsa bile
+            // surec hemen sonlansin.
+            Environment.Exit(0);
         }
     }
 }

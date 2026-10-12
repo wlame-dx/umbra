@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Umbra — ekranını kablosuz ikinci ekrana çevir</title>
-<meta name="description" content="Umbra, Windows bilgisayarındaki ekranı yerel ağ üzerinden telefonuna ya da tabletine akıtır. Ücretsiz, filigransız, tek dosya.">
+<title>Umbra - ekranını telefondan kullan</title>
+<meta name="description" content="Umbra, Windows ekranını yerel ağ üzerinden telefon veya tablete aktarır. Kurulum yok, hesap yok, filigran yok.">
 <meta name="theme-color" content="#0b0c10">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="style.css">
@@ -25,13 +25,13 @@
 </header>
 
 <section class="hero" id="top">
-  <p class="kicker" data-i18n="hero.kicker">Windows için · yerel ağ · ücretsiz</p>
-  <h1 data-i18n-html="hero.h1">Ekranın, gölgen gibi<br>yanında olsun.</h1>
-  <p class="alt" data-i18n-html="hero.alt">Umbra bilgisayarındaki ekranı kablosuz bir ikinci ekrana dönüştürür.<br>
-  Telefonundan ya da tabletinden tarayıcıda aç, tam ekrana geç, kullan.</p>
+  <p class="kicker" data-i18n="hero.kicker">Windows 10 / 11 · ücretsiz</p>
+  <h1 data-i18n-html="hero.h1">Bilgisayarının ekranını<br>telefonunda aç.</h1>
+  <p class="alt" data-i18n-html="hero.alt">Umbra, Windows'ta çalışan küçük bir program. Ekranı yerel ağ üzerinden yayınlar;
+  aynı Wi-Fi'deki telefon ya da tablet tarayıcıdan bağlanır.<br>Kurulum ve hesap istemez.</p>
   <div class="cta-row">
     <a class="btn" href="#indir" data-i18n="hero.cta1">Windows için indir</a>
-    <a class="btn ghost" href="#nasil" data-i18n="hero.cta2">Nasıl çalışır?</a>
+    <a class="btn ghost" href="#nasil" data-i18n="hero.cta2">Nasıl çalışır</a>
   </div>
 
   <div class="mock">
@@ -49,22 +49,22 @@
 </section>
 
 <section class="band first" id="nasil">
-  <h2 class="reveal" data-i18n="steps.title">Üç adımda hazır</h2>
+  <h2 class="reveal" data-i18n="steps.title">Kurulum yok, üç adım var</h2>
   <div class="steps">
     <div class="step reveal">
       <span class="n">1</span>
       <h3 data-i18n="step1.h">Çalıştır</h3>
-      <p data-i18n="step1.p">Umbra.exe'yi aç. Program sana bir adres verir, başka kurulum gerekmez.</p>
+      <p data-i18n="step1.p">Umbra.exe'yi aç. Sana tek bir adres gösterir. Kurulum, hesap, arka plan servisi yok.</p>
     </div>
     <div class="step reveal">
       <span class="n">2</span>
-      <h3 data-i18n="step2.h">Sanal ekran kur (istersen)</h3>
-      <p data-i18n="step2.p">Açık kaynak sürücülerle ikinci monitörü ekle. Ekranın yoksa masaüstünü de yayınlayabilirsin.</p>
+      <h3 data-i18n="step2.h">Adresi aç</h3>
+      <p data-i18n="step2.p">Telefon veya tabletten aynı ağdaki adresi tarayıcıya yaz. Görüntü hemen gelir.</p>
     </div>
     <div class="step reveal">
       <span class="n">3</span>
-      <h3 data-i18n="step3.h">Bağlan</h3>
-      <p data-i18n="step3.p">Başka cihaz aynı Wi-Fi'daysa adresi tarayıcıda aç. Dokun, kaydır, kullan.</p>
+      <h3 data-i18n="step3.h">İkinci ekran (isteğe bağlı)</h3>
+      <p data-i18n="step3.p">Açık kaynak bir IDD sürücüsü kurarsan masaüstünü genişletirsin. İstemezsen mevcut ekranı yayınlarsın.</p>
     </div>
   </div>
 </section>
@@ -72,51 +72,50 @@
 <section class="terminal-zone" id="terminal">
   <div class="term reveal">
     <div class="term-head"><span></span><span></span><span></span><b>umbra</b></div>
-<pre data-i18n-html="term.body"><span class="t1">$ umbra</span>
-<span class="t2">[ok]   yayın     192.168.1.9:8777</span>
-<span class="t2">[ws]  istemci   android_tablet  (bağlı)</span>
-<span class="t2">[fps]  30 k/sn   &asymp;2 MB/s   gecikme 18ms</span>
-<span class="t3">ekranın artık yanında.</span></pre>
+<pre data-i18n-html="term.body"><span class="t1">C:\&gt; umbra.exe</span>
+<span class="t2">yayın hazır: http://192.168.1.9:8777/</span>
+<span class="t3">telefonda bu adresi aç. gerisi tarayıcıda halledilir.</span></pre>
   </div>
 </section>
 
 <section class="band mid" id="nevar">
-  <h2 class="reveal" data-i18n="features.title">İçinde neler var</h2>
+  <h2 class="reveal" data-i18n="features.title">Ne var, ne yok</h2>
   <div class="grid">
-    <div class="item reveal"><h3 data-i18n="feat1.h">Dokunmatik kontrol</h3><p data-i18n="feat1.p">Dokun, sürükle, iki parmakla kaydır. Uzak masaüstünde gerçek dokunma olarak işlenir.</p></div>
-    <div class="item reveal"><h3 data-i18n="feat2.h">Klavye aktarımı</h3><p data-i18n="feat2.p">Tarayıcıdaki klavyeni bilgisayara yönlendir. Kısayollar dahil.</p></div>
-    <div class="item reveal"><h3 data-i18n="feat3.h">Kalite ve hız ayarı</h3><p data-i18n="feat3.p">Kare hızı, JPEG kalitesi ve ölçek canlı ayarlanır. Yavaş ağda görüntüyü küçült, akıcılığı koru.</p></div>
-    <div class="item reveal"><h3 data-i18n="feat4.h">Tam ekran ve ölçekleme</h3><p data-i18n="feat4.p">Sığdır, doldur ya da 1:1. Tek dokunuşla tam ekrana geç.</p></div>
-    <div class="item reveal"><h3 data-i18n="feat5.h">Tek dosya</h3><p data-i18n="feat5.p">Kurulum yok, arka planda servis yok. Tıkla, kullan, kapat.</p></div>
-    <div class="item reveal"><h3 data-i18n="feat6.h">Filigran yok</h3><p data-i18n="feat6.p">Ücretsiz sürüm diye ayrı bir şey yok; tek sürüm var, o da tam.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat1.h">Dokunmatik kontrol</h3><p data-i18n="feat1.p">Dokunma, iki parmakla kaydırma desteklenir. İşletim sistemi touch enjeksiyonunu kabul etmezse fareye düşer.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat2.h">Klavye</h3><p data-i18n="feat2.p">Tarayıcı klavyesini bilgisayara gönderir. Metin alanlarına yazabilirsin.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat3.h">Kalite ayarı</h3><p data-i18n="feat3.p">Kare hızı, JPEG kalitesi ve ölçek çalışırken değiştirilebilir. Yavaş ağda ölçeği küçült.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat4.h">Tam ekran</h3><p data-i18n="feat4.p">Sığdır, doldur veya 1:1. İstediğin zaman tam ekrana geç.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat5.h">Tek dosya</h3><p data-i18n="feat5.p">Yaklaşık 180 KB, .NET Framework 4.8 ile çalışır. Kurulum yapmaz, kayıt defterini kurcalamaz.</p></div>
+    <div class="item reveal"><h3 data-i18n="feat6.h">Filigran yok</h3><p data-i18n="feat6.p">Ücretsiz sürüm ayrımı yok. Tek sürüm var, o da sınırsız.</p></div>
   </div>
 </section>
 
 <section class="download" id="indir">
   <div class="dl-card reveal">
-    <h2 data-i18n="dl.h2">Windows 10 / 11 için tek dosya</h2>
-    <p data-i18n-html="dl.p">~100 KB &mdash; .NET Framework 4.8'le çalışır (Windows'ta hazır gelir). <br>İndir, aç, çalıştır. Başka bir şey yapma.</p>
+    <h2 data-i18n="dl.h2">Windows 10 / 11, tek dosya</h2>
+    <p data-i18n-html="dl.p">~180 KB. .NET Framework 4.8 kuruluysa (Windows'ta hazır gelir) başka bir şey gerekmez.<br>İndir, aç, çalıştır.</p>
     <a class="btn big" href="https://github.com/wlame-dx/umbra/releases/latest" data-i18n="dl.btn">Son sürümü indir</a>
-    <p class="hint" data-i18n-html="dl.hint">Kaynak kod ve kurulum rehberi: <a href="https://github.com/wlame-dx/umbra">github.com/wlame-dx/umbra</a></p>
+    <p class="hint" data-i18n-html="dl.hint">Kaynak kod: <a href="https://github.com/wlame-dx/umbra">github.com/wlame-dx/umbra</a></p>
   </div>
 </section>
 
 <section class="band last" id="sss">
-  <h2 class="reveal" data-i18n="faq.title">Merak edilenler</h2>
+  <h2 class="reveal" data-i18n="faq.title">Sık sorulanlar</h2>
   <div class="qa">
-    <details class="reveal"><summary data-i18n="q1.s">Sanal ekranı kim oluşturuyor?</summary><p data-i18n="q1.p">Umbra kendisi sürücü kurmaz; imzasız kernel sürücüsü dayatmak istemiyoruz. Açık kaynak IDD sürücülerinden birini kullanarak ikinci ekranı eklersin, Umbra onu otomatik bulur. Boşta ekran yoksa mevcut ekranları da yayınlayabilirsin.</p></details>
-    <details class="reveal"><summary data-i18n="q2.s">İnternet gerekli mi?</summary><p data-i18n="q2.p">Hayır. Görüntü yalnızca yerel ağda dolaşır, buluta çıkmaz.</p></details>
-    <details class="reveal"><summary data-i18n="q3.s">Neden spacedesk değil de bu?</summary><p data-i18n="q3.p">Spacedesk'in ücretsiz tarafı filigranlı. Umbra'nın tek sürümü var: filigransız ve açık kaynak.</p></details>
-    <details class="reveal"><summary data-i18n="q4.s">Android uygulaması var mı?</summary><p data-i18n="q4.p">Tarayıcı istemcisi Android'de tam ekran ve "ana ekrana ekle" ile uygulama gibi çalışıyor. Ayrı bir APK şu an için planlanmıyor.</p></details>
+    <details class="reveal"><summary data-i18n="q1.s">Sanal ekran neden hemen gelmiyor?</summary><p data-i18n="q1.p">Windows, imzasız kernel sürücüsüne izin vermez. Bu yüzden Umbra sürücüyü kendi kurmaz. Açık kaynak bir IDD sürücüsü (mesela Virtual-Display-Driver) kurman gerekir. vdriver klasöründeki get-driver.ps1 bunu senin yerine indirir. Sürücü olmasa bile mevcut ekranı yayınlayabilirsin.</p></details>
+    <details class="reveal"><summary data-i18n="q2.s">İnternet gerekli mi?</summary><p data-i18n="q2.p">Hayır. Görüntü sadece yerel ağda dolaşır. Dışarıya hiçbir veri gitmez.</p></details>
+    <details class="reveal"><summary data-i18n="q3.s">Neden spacedesk değil?</summary><p data-i18n="q3.p">spacedesk'in ücretsiz sürümünde filigran var. Umbra ücretsiz, kaynak kodu açık ve tek dosya. Sadece daha az şey yapıyor; artısı bu.</p></details>
+    <details class="reveal"><summary data-i18n="q4.s">Android uygulaması var mı?</summary><p data-i18n="q4.p">Ayrı bir APK yok. Tarayıcı istemcisi Android'de tam ekran çalışıyor, "Ana ekrana ekle" derseniz uygulama gibi açılıyor.</p></details>
+    <details class="reveal"><summary data-i18n="q5.s">Ne kadar güvenli?</summary><p data-i18n="q5.p">Yayın şifresiz HTTP/WebSocket üzerinden gider; aynı ağdaki biri bağlanabilir. Ev ağı için pratik, halka açık Wi-Fi için değil. Uzaktan kontrolü istediğin an kapatabilirsin.</p></details>
   </div>
 </section>
 
 <footer>
   <div class="f-row">
     <span class="logo small"><span class="logo-mark"></span>Umbra</span>
-    <span class="muted" data-i18n="footer.tag">gölge gibi yanında.</span>
+    <span class="muted" data-i18n="footer.tag">Windows için küçük bir araç.</span>
   </div>
-  <p class="muted small" data-i18n-html="footer.legal">Açık kaynak &middot; MIT lisansı &middot; <a href="https://github.com/wlame-dx/umbra">GitHub</a></p>
+  <p class="muted small" data-i18n-html="footer.legal">Açık kaynak · MIT lisansı · <a href="https://github.com/wlame-dx/umbra">GitHub</a></p>
 </footer>
 
 <script src="app.js"></script>

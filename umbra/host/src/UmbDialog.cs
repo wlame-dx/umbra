@@ -11,9 +11,13 @@ namespace Umbra
     /// <summary>Umbra temasiyla eslesen uyari / onay penceresi.</summary>
     internal sealed class UmbDialog : Window
     {
+        /// <summary>Test icin: 0'dan buyukse pencere bu sure sonunda otomatik kapanir.</summary>
+        internal static int TestAutoCloseMs = 0;
+
         private bool _result;
         private Grid _body;
         private Grid _panel;
+        private TextBlock _title;
 
         private UmbDialog()
         {
@@ -29,6 +33,19 @@ namespace Umbra
 
             // Duzgun gozukmesi icin WindowChrome kullanilmaz; baslik surukleme elle yapilir.
             Content = BuildShell();
+
+            if (TestAutoCloseMs > 0)
+            {
+                var timer = new System.Windows.Threading.DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(TestAutoCloseMs);
+                timer.Tick += delegate
+                {
+                    timer.Stop();
+                    _result = true;
+                    try { Close(); } catch { }
+                };
+                Loaded += delegate { timer.Start(); };
+            }
         }
 
         private FrameworkElement BuildShell()
@@ -84,6 +101,7 @@ namespace Umbra
             title.FontSize = 14;
             title.FontWeight = FontWeights.SemiBold;
             title.VerticalAlignment = VerticalAlignment.Center;
+            _title = title;
 
             stack.Children.Add(mark);
             stack.Children.Add(title);
@@ -94,7 +112,11 @@ namespace Umbra
             close.HorizontalAlignment = HorizontalAlignment.Right;
             close.VerticalAlignment = VerticalAlignment.Center;
             close.Style = CloseButtonStyle();
-            close.Click += delegate { DialogResult = false; Close(); };
+            close.Click += delegate
+            {
+                try { DialogResult = false; } catch { }
+                try { Close(); } catch { }
+            };
             header.Children.Add(close);
 
             return header;
@@ -184,6 +206,17 @@ namespace Umbra
             }
         }
 
+        private void SetTitle(string title)
+        {
+            if (_title != null) _title.Text = title;
+        }
+
+        private void PlaceOwner(Window owner)
+        {
+            if (owner == null) return;
+            try { Owner = owner; } catch { }
+        }
+
         // ------------------------------------------------------------------
         //  Statik yardimcilar
         // ------------------------------------------------------------------
@@ -191,8 +224,8 @@ namespace Umbra
         public static void Warn(Window owner, string title, string message)
         {
             var dialog = new UmbDialog();
-            dialog.Owner = owner;
-            ((TextBlock)dialog.FindName("DlgTitle")).Text = title;
+            dialog.PlaceOwner(owner);
+            dialog.SetTitle(title);
             dialog.SetBody(message);
             dialog.SetActionButtons(I18n.T("dlg.ok"), false, null, null);
             dialog.ShowDialog();
@@ -202,8 +235,8 @@ namespace Umbra
         public static bool ConfirmMany(Window owner, string title, string confirmText, IEnumerable<string> lines)
         {
             var dialog = new UmbDialog();
-            dialog.Owner = owner;
-            ((TextBlock)dialog.FindName("DlgTitle")).Text = title;
+            dialog.PlaceOwner(owner);
+            dialog.SetTitle(title);
             dialog.SetBodyLines(lines);
             dialog.SetActionButtons(confirmText, true, null, null);
             dialog.ShowDialog();
@@ -213,8 +246,8 @@ namespace Umbra
         public static bool Confirm(Window owner, string title, string message)
         {
             var dialog = new UmbDialog();
-            dialog.Owner = owner;
-            ((TextBlock)dialog.FindName("DlgTitle")).Text = title;
+            dialog.PlaceOwner(owner);
+            dialog.SetTitle(title);
             dialog.SetBody(message);
             dialog.SetActionButtons(I18n.T("dlg.yes"), true, null, null);
             dialog.ShowDialog();

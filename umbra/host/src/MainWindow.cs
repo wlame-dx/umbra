@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Web.Script.Serialization;
 
 namespace Umbra
@@ -28,6 +32,7 @@ namespace Umbra
         private bool _running;
         private bool _suppressSelection;
         private bool _vdCreated;
+        private bool _vdWanted;
         private bool _autoConfirm;
 
         private FrameworkElement _root;
@@ -179,13 +184,43 @@ namespace Umbra
 
             // Otomatik baslatma: test ve otomatik kullanim icin gizli bir bayrak.
             // Bu kipte onay/uyari pencereleri ve sanal ekran olusturma atlanir.
-            _autoConfirm = Array.IndexOf(Environment.GetCommandLineArgs(), "--autostart") >= 0;
-            if (_autoConfirm)
+            string[] args = Environment.GetCommandLineArgs();
+            bool autoStart = Array.IndexOf(args, "--autostart") >= 0;
+            bool selfTest = Array.IndexOf(args, "--selftest") >= 0;
+            _autoConfirm = autoStart;
+
+            if (selfTest) UmbDialog.TestAutoCloseMs = 700;
+
+            if (autoStart || selfTest)
             {
                 Loaded += delegate
                 {
                     Dispatcher.BeginInvoke(new Action(delegate() { StartStreaming(); }));
                 };
+            }
+
+            if (selfTest)
+            {
+                // Baslat -> durdur -> kapat akisini kendiliginden calistir.
+                var stopTimer = new DispatcherTimer();
+                stopTimer.Interval = TimeSpan.FromSeconds(3);
+                stopTimer.Tick += delegate
+                {
+                    stopTimer.Stop();
+                    Log.Info("selftest: durduruluyor");
+                    StopStreaming();
+                };
+
+                var closeTimer = new DispatcherTimer();
+                closeTimer.Interval = TimeSpan.FromSeconds(7);
+                closeTimer.Tick += delegate
+                {
+                    closeTimer.Stop();
+                    Log.Info("selftest: kapatiliyor");
+                    try { Close(); } catch (Exception ex) { Log.Error("selftest close hatasi: " + ex.Message); }
+                };
+
+                Loaded += delegate { stopTimer.Start(); closeTimer.Start(); };
             }
         }
 
@@ -210,20 +245,114 @@ namespace Umbra
                 _rootBorder.Effect = maximized ? null : _shadowEffect;
             }
             if (_btnMax != null) _btnMax.Content = maximized ? "\u2750" : "\u25A1";
-
-            if (maximized)
-            {
-                try
-                {
-                    var area = SystemParameters.WorkArea;
-                    Left = area.Left;
-                    Top = area.Top;
-                    Width = area.Width;
-                    Height = area.Height;
-                }
-                catch { }
-            }
         }
+
+        // ------------------------------------------------------------------
+        //  Buyutme: pencereyi gorev cubugunu kapatmadan ekrana sigdir.
+        //  WindowStyle=None oldugu icin WPF kendi basina tum ekrani kaplar;
+        //  WM_GETMINMAXINFO ile calisma alanina sinirliyoruz.
+        // ------------------------------------------------------------------
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            try
+            {
+                var handle = new WindowInteropHelper(this).Handle;
+                var source = HwndSource.FromHwnd(handle);
+                if (source != null) source.AddHook(WindowProc);
+            }
+            catch { }
+        }
+
+        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == 0x0024) // WM_GETMINMAXINFO
+            {
+                try { ClampToWorkArea(hwnd, lParam); } catch { }
+                handled = true;
+            }
+            return IntPtr.Zero;
+        }
+
+        private void ClampToWorkArea(IntPtr hwnd, IntPtr lParam)
+        {
+            IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+            if (monitor == IntPtr.Zero) return;
+
+            var info = new MONITORINFO();
+            info.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+            if (!GetMonitorInfo(monitor, ref info)) return;
+
+            var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+
+            mmi.ptMaxPosition.X = info.rcWork.Left - info.rcMonitor.Left;
+            mmi.ptMaxPosition.Y = info.rcWork.Top - info.rcMonitor.Top;
+            mmi.ptMaxSize.X = info.rcWork.Right - info.rcWork.Left;
+            mmi.ptMaxSize.Y = info.rcWork.Bottom - info.rcWork.Top;
+
+            // Arayuzun sikismamasi icin asgari boyutu (DIP -> fiziksel piksel).
+            double scale = 1.0;
+            try
+            {
+                uint dpi = GetDpiForWindow(hwnd);
+                if (dpi > 0) scale = dpi / 96.0;
+            }
+            catch { }
+
+            int minW = (int)Math.Ceiling(MinWidth * scale);
+            int minH = (int)Math.Ceiling(MinHeight * scale);
+            if (minW > 0) mmi.ptMinTrackSize.X = minW;
+            if (minH > 0) mmi.ptMinTrackSize.Y = minH;
+
+            Marshal.StructureToPtr(mmi, lParam, true);
+        }
+
+        private const int MONITOR_DEFAULTTONEAREST = 2;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WinPoint
+        {
+            public int X;
+            public int Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WinRect
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MINMAXINFO
+        {
+            public WinPoint ptReserved;
+            public WinPoint ptMaxSize;
+            public WinPoint ptMaxPosition;
+            public WinPoint ptMinTrackSize;
+            public WinPoint ptMaxTrackSize;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public WinRect rcMonitor;
+            public WinRect rcWork;
+            public int dwFlags;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int flags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetDpiForWindow(IntPtr hwnd);
 
         // ------------------------------------------------------------------
         //  Dil
@@ -403,66 +532,127 @@ namespace Umbra
 
         private void StartStreaming()
         {
-            PushSettings();
-            var settings = _service.Settings;
-
-            if (_monitorCombo.SelectedItem == null)
-            {
-                Log.Error(I18n.T("log.no_source"));
-                return;
-            }
-
-            int port;
-            if (!int.TryParse(_portBox.Text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out port) ||
-                port < 1 || port > 65535)
-            {
-                port = 8777;
-                _portBox.Text = "8777";
-                Log.Warn(I18n.T("log.bad_port"));
-            }
-            settings.Port = port;
-
-            // Yayindan once olasi sorunlari uyari olarak goster.
-            if (!ConfirmStart(port)) return;
-
-            // Sanal ekrani kendisi olustursun (varsa).
-            _vdCreated = false;
-            if (!_autoConfirm && settings.AutoVd && VdController.IsAvailable())
-            {
-                Log.Info(I18n.T("log.vd_creating"));
-                if (VdController.Create())
-                {
-                    _vdCreated = true;
-                    Log.Info(I18n.T("log.vd_created"));
-                    RefreshMonitors(false);
-                }
-                else
-                {
-                    Log.Error(I18n.T("log.vd_failed"));
-                }
-            }
-
             try
             {
-                if (_server == null || _serverPort != port)
+                PushSettings();
+                var settings = _service.Settings;
+
+                if (_monitorCombo.SelectedItem == null)
                 {
-                    if (_server != null) { _server.Stop(); _server = null; }
-                    _server = new WebServer(_service.Hub, OnClientMessage);
-                    _server.Start(port);
-                    _serverPort = port;
+                    Log.Error(I18n.T("log.no_source"));
+                    return;
                 }
+
+                int port;
+                if (!int.TryParse(_portBox.Text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out port) ||
+                    port < 1 || port > 65535)
+                {
+                    port = 8777;
+                    _portBox.Text = "8777";
+                    Log.Warn(I18n.T("log.bad_port"));
+                }
+                settings.Port = port;
+
+                // Yayindan once olasi sorunlari uyari olarak goster.
+                if (!ConfirmStart(port)) return;
+
+                try
+                {
+                    if (_server == null || _serverPort != port)
+                    {
+                        if (_server != null) { _server.Stop(); _server = null; }
+                        _server = new WebServer(_service.Hub, OnClientMessage);
+                        _server.Start(port);
+                        _serverPort = port;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(I18n.F("log.server_fail", port, ex.Message));
+                    return;
+                }
+
+                _service.Start();
+                _running = true;
+                UpdateStatus();
+
+                Log.Info(I18n.F("log.start", NetUtil.GetLanIPv4(), port));
+
+                // Sanal ekrani arka planda olustur; arayuz donmasin.
+                _vdCreated = false;
+                if (!_autoConfirm && settings.AutoVd) StartVirtualDisplay();
             }
             catch (Exception ex)
             {
-                Log.Error(I18n.F("log.server_fail", port, ex.Message));
+                Log.Error(I18n.F("log.start_fail", ex.Message));
+                _running = false;
+                UpdateStatus();
+            }
+        }
+
+        // ------------------------------------------------------------------
+        //  Sanal ekran (arka planda)
+        // ------------------------------------------------------------------
+
+        private void StartVirtualDisplay()
+        {
+            if (!VdController.IsAvailable() || !VdController.IsDriverReady())
+            {
+                // Surucu kurulu degilse bosuna UAC acmayalim.
+                Log.Warn(I18n.T("log.vd_nodriver"));
                 return;
             }
 
-            _service.Start();
-            _running = true;
-            UpdateStatus();
+            _vdWanted = true;
+            Log.Info(I18n.T("log.vd_creating"));
 
-            Log.Info(I18n.F("log.start", NetUtil.GetLanIPv4(), port));
+            VdController.CreateAsync(delegate(bool ok)
+            {
+                if (ok) _vdCreated = true;
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    if (!_vdWanted)
+                    {
+                        // Yayin bu sirada durduruldu; hemen geri kaldir.
+                        if (_vdCreated) { _vdCreated = false; VdController.RemoveAsync(null); }
+                        return;
+                    }
+                    if (ok)
+                    {
+                        Log.Info(I18n.T("log.vd_created"));
+                        RefreshMonitors(false);
+                    }
+                    else
+                    {
+                        Log.Error(I18n.T("log.vd_failed"));
+                    }
+                }));
+            });
+        }
+
+        private void StopVirtualDisplay()
+        {
+            _vdWanted = false;
+            if (!_vdCreated) return;
+
+            _vdCreated = false;
+            Log.Info(I18n.T("log.vd_removing"));
+
+            VdController.RemoveAsync(delegate(bool ok)
+            {
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    if (ok)
+                    {
+                        Log.Info(I18n.T("log.vd_removed"));
+                        RefreshMonitors(false);
+                    }
+                    else
+                    {
+                        Log.Warn(I18n.T("log.vd_remove_failed"));
+                    }
+                }));
+            });
         }
 
         private bool ConfirmStart(int port)
@@ -477,7 +667,7 @@ namespace Umbra
             else if (settings.InputMode == "touch" && !_injector.CanTouch)
                 warnings.Add(I18n.T("warn.touch_fail"));
 
-            if (settings.AutoVd && !VdController.IsAvailable())
+            if (settings.AutoVd && !VdController.IsDriverReady())
                 warnings.Add(I18n.T("warn.vd_missing"));
 
             if (IsPortBusy(port))
@@ -504,30 +694,32 @@ namespace Umbra
 
         private void StopStreaming()
         {
-            if (!_autoConfirm && !UmbDialog.Confirm(this, I18n.T("dlg.stop_title"), I18n.T("dlg.stop_msg")))
-                return;
-
-            _service.Stop();
-            if (_server != null) { _server.Stop(); _server = null; }
-            _serverPort = -1;
-            _running = false;
-
-            try { _injector.ReleaseAll(); } catch { }
-
-            // Sanal ekrani kapat.
-            if (_vdCreated)
+            try
             {
-                Log.Info(I18n.T("log.vd_removing"));
-                if (VdController.Remove())
-                {
-                    Log.Info(I18n.T("log.vd_removed"));
-                    RefreshMonitors(false);
-                }
-                _vdCreated = false;
-            }
+                if (!_autoConfirm && !UmbDialog.Confirm(this, I18n.T("dlg.stop_title"), I18n.T("dlg.stop_msg")))
+                    return;
 
-            UpdateStatus();
-            Log.Info(I18n.T("log.stop"));
+                _running = false;
+                UpdateStatus();
+
+                try { _service.Stop(); }
+                catch (Exception ex) { Log.Warn("Yayin dongusu durdurulamadi: " + ex.Message); }
+
+                try { if (_server != null) { _server.Stop(); _server = null; } }
+                catch (Exception ex) { Log.Warn("Sunucu durdurulamadi: " + ex.Message); }
+                _serverPort = -1;
+
+                try { _injector.ReleaseAll(); } catch { }
+
+                // Sanal ekrani arka planda kaldir; arayuz donmasin.
+                StopVirtualDisplay();
+
+                Log.Info(I18n.T("log.stop"));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(I18n.F("log.stop_fail", ex.Message));
+            }
         }
 
         private void UpdateStatus()
@@ -700,15 +892,16 @@ namespace Umbra
         protected override void OnClosed(EventArgs e)
         {
             _running = false;
+            _vdWanted = false;
             try { _injector.ReleaseAll(); } catch { }
             try { _service.Stop(); } catch { }
             try { if (_server != null) _server.Stop(); } catch { }
 
-            // Kapanirken sanal ekrani da temizle.
+            // Kapanirken sanal ekrani da temizle (beklemeden).
             if (_vdCreated)
             {
-                try { VdController.Remove(); } catch { }
                 _vdCreated = false;
+                try { VdController.RemoveAsync(null); } catch { }
             }
 
             base.OnClosed(e);

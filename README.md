@@ -101,14 +101,22 @@ Umbra kernel sürücüsü içermez (imzasız sürücü kurulumu Windows'ta hem e
 riskli). Bunun yerine açık kaynak bir **IDD (Indirect Display Driver)** ile birlikte
 çalışır ve onu senin yerine yönetir:
 
-1. Açık kaynak sürücülerden birini indir (örn. [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver) veya [usbmmidd](https://github.com/ge9/IddSampleDriver)).
-2. Dosyaları `vdriver\bin\` klasörüne kopyala (üst klasördeki `vdriver\README.md`'ye bak).
-3. Umbra'da **"Sanal ekranı otomatik oluştur/kapat"** anahtarını açık bırak.
+En kolay yol:
 
-Yayını başlatınca Umbra `vdriver\create.cmd`'yi (yönetici hakkiyla, UAC onayı isteyebilir)
-çalıştırır, sanal ekranı kurar ve monitör listesini tazeler. Yayın durunca (ya da uygulama
-kapanınca) `vdriver\remove.cmd` ile kaldırır. Betikler yoksa uyarı verir ve hiçbir şeyi
-bozmadan mevcut ekranı yayınlar.
+```powershell
+powershell -ExecutionPolicy Bypass -File vdriver\get-driver.ps1
+```
+
+Bu betik [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
+sürümünü indirip `vdriver\bin\` içine koyar. Elle kurmak istersen açık kaynak sürücülerden
+birini indir (Virtual-Display-Driver veya [usbmmidd](https://github.com/ge9/IddSampleDriver)),
+dosyaları `vdriver\bin\` klasörüne kopyala (ayrıntı: `vdriver\README.md`).
+
+Sonra Umbra'da **"Sanal ekranı otomatik oluştur/kapat"** anahtarını açık bırak. Yayını
+başlatınca Umbra `vdriver\create.cmd`'yi (yönetici hakkıyla, UAC onayı isteyebilir)
+arka planda çalıştırır, sanal ekranı kurar ve monitör listesini tazeler; arayüz donmaz.
+Yayın durunca (ya da uygulama kapanınca) `vdriver\remove.cmd` ile kaldırır. Sürücü dosyaları
+yoksa boşuna UAC açmaz; günlüğe bilgi yazar ve mevcut ekranı yayınlar.
 
 ## Tarayıcı istemcisi
 
@@ -145,7 +153,7 @@ umbra/
     ui/MainWindow.xaml  WPF arayüzü (çalışma zamanında yüklenir)
     wwwroot/            web istemcisi (index.html, style.css, app.js, favicon)
     assets/             U simgesi (umbra.ico, umbra.png)
-    vdriver/            sanal ekran yardımcı betikleri (create.cmd, remove.cmd)
+    vdriver/            sanal ekran yardımcı betikleri (create.cmd, remove.cmd, get-driver.ps1)
     build.ps1           tek komutla derleme
     package.ps1         kurulum + portable paketleme
     run.ps1             çalıştırma

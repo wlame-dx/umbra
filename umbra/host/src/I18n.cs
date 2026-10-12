@@ -17,7 +17,7 @@ namespace Umbra
         // Anahtar -> [Turkce, Ingilizce]
         private static readonly Dictionary<string, string[]> Map = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            { "app.tagline",          new[] { "ikinci ekran, kablosuz", "second screen, wireless" } },
+            { "app.tagline",          new[] { "yerel ağda ekran paylaşımı", "screen sharing on your LAN" } },
 
             { "status.idle",          new[] { "Beklemede", "Idle" } },
             { "status.live",          new[] { "Yayında", "Streaming" } },
@@ -86,8 +86,8 @@ namespace Umbra
                 } },
             { "warn.vd_missing",      new[]
                 {
-                    "Sanal ekran sürücüsü bulunamadı (vdriver klasörü yok). Mevcut ekran yayınlanacak.",
-                    "Virtual display driver not found (no vdriver folder). The existing display will be streamed."
+                    "Sanal ekran sürücüsü kurulu değil; yalnızca mevcut ekran yayınlanacak.",
+                    "No virtual display driver installed; only the current screen will be streamed."
                 } },
             { "warn.vd_failed",       new[]
                 {
@@ -127,6 +127,16 @@ namespace Umbra
                     "Sunucu başlatılamadı (port {0}): {1}",
                     "Could not start server (port {0}): {1}"
                 } },
+            { "log.start_fail",       new[]
+                {
+                    "Yayın başlatılamadı: {0}",
+                    "Could not start streaming: {0}"
+                } },
+            { "log.stop_fail",        new[]
+                {
+                    "Yayın durdurulurken bir hata oluştu: {0}",
+                    "Something went wrong while stopping: {0}"
+                } },
             { "log.capture_start",    new[] { "Yakalama başladı: {0} {1}x{2}", "Capture started: {0} {1}x{2}" } },
             { "log.res_set",          new[] { "Çözünürlük ayarlandı: {0}x{1}", "Resolution set: {0}x{1}" } },
             { "log.res_already",      new[] { "Çözünürlük zaten {0}x{1}.", "Resolution is already {0}x{1}." } },
@@ -139,6 +149,12 @@ namespace Umbra
             { "log.vd_removing",      new[] { "Sanal ekran kaldırılıyor…", "Removing virtual display…" } },
             { "log.vd_created",       new[] { "Sanal ekran hazır.", "Virtual display is ready." } },
             { "log.vd_removed",       new[] { "Sanal ekran kaldırıldı.", "Virtual display removed." } },
+            { "log.vd_remove_failed", new[] { "Sanal ekran kaldırılamadı.", "Could not remove the virtual display." } },
+            { "log.vd_nodriver",      new[]
+                {
+                    "Sanal ekran sürücüsü kurulu değil; mevcut ekran yayınlanıyor. Ayrıntı için vdriver klasörüne bakın.",
+                    "No virtual display driver installed; streaming the current screen. See the vdriver folder for details."
+                } },
             { "log.vd_failed",        new[]
                 {
                     "Sanal ekran oluşturulamadı (yönetici yetkisi gerekebilir).",
