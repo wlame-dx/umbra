@@ -15,5 +15,8 @@ namespace Umbra
 
         // Yayin baslarken sanal ekrani olustur, dururken kaldir
         public bool AutoVd = true;
+
+        // Yeni baglantilar bilgisayarda onaylansin mi?
+        public bool RequireApproval = true;
     }
 }

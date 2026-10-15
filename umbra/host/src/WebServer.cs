@@ -105,7 +105,7 @@ namespace Umbra
                     if (headers.TryGetValue("Upgrade", out upgrade) &&
                         upgrade.IndexOf("websocket", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                        HandleWebSocket(stream, headers);
+                        HandleWebSocket(stream, headers, client);
                     }
                     else
                     {
@@ -138,7 +138,7 @@ namespace Umbra
             return Encoding.UTF8.GetString(buffer.ToArray());
         }
 
-        private void HandleWebSocket(NetworkStream stream, Dictionary<string, string> headers)
+        private void HandleWebSocket(NetworkStream stream, Dictionary<string, string> headers, TcpClient client)
         {
             string key;
             headers.TryGetValue("Sec-WebSocket-Key", out key);
@@ -163,8 +163,15 @@ namespace Umbra
 
             var connection = new WsConnection(stream);
             var session = new ClientSession(connection);
+            try
+            {
+                var endpoint = client.Client.RemoteEndPoint as IPEndPoint;
+                if (endpoint != null) session.RemoteIP = endpoint.Address.ToString();
+            }
+            catch { }
+
             _hub.Add(session);
-            Log.Info("Istemci baglandi (" + session.Id + "). Aktif: " + _hub.Count);
+            Log.Info("Istemci baglandi (" + session.Id + ", " + session.RemoteIP + "). Aktif: " + _hub.Count);
 
             var pumpThread = new Thread(delegate() { session.Pump(); });
             pumpThread.IsBackground = true;

@@ -48,6 +48,7 @@ namespace Umbra
             { "control.mode.mouse",   new[] { "Fare imleci", "Mouse cursor" } },
             { "control.port",         new[] { "Bağlantı noktası (port)", "Port" } },
             { "control.vd",           new[] { "Sanal ekranı otomatik oluştur/kapat", "Auto create virtual display" } },
+            { "control.approval",     new[] { "Yeni bağlantıları onayla", "Approve new connections" } },
             { "control.getdriver",    new[] { "Sanal ekran sürücüsünü indir", "Download virtual display driver" } },
             { "control.driver_hint",  new[]
                 {
@@ -94,6 +95,14 @@ namespace Umbra
                     "vdriver\\get-driver.ps1 bulunamadı. Kurulum klasöründeki vdriver klasörünü kontrol edin.",
                     "vdriver\\get-driver.ps1 was not found. Check the vdriver folder in the install directory."
                 } },
+            { "dlg.conn_title",       new[] { "Bağlantı isteği", "Connection request" } },
+            { "dlg.conn_allow",       new[] { "Bağlantıya izin ver", "Allow connection" } },
+            { "dlg.conn_name",        new[] { "Cihaz: {0}", "Device: {0}" } },
+            { "dlg.conn_model",       new[] { "Model: {0}", "Model: {0}" } },
+            { "dlg.conn_platform",    new[] { "Platform: {0}", "Platform: {0}" } },
+            { "dlg.conn_os",          new[] { "Sistem: {0}", "OS: {0}" } },
+            { "dlg.conn_ip",          new[] { "IP adresi: {0}", "IP address: {0}" } },
+            { "dlg.conn_unknown",     new[] { "Bilinmeyen cihaz", "Unknown device" } },
 
             // --- yayin oncesi uyarilar ---
             { "warn.touch_off",       new[]
@@ -186,6 +195,16 @@ namespace Umbra
                 {
                     "Sürücü indirme başlatılamadı: {0}",
                     "Could not start the driver download: {0}"
+                } },
+            { "log.conn_allowed",     new[]
+                {
+                    "{0} ({1}) bağlantısı onaylandı.",
+                    "Connection from {0} ({1}) approved."
+                } },
+            { "log.conn_denied",      new[]
+                {
+                    "{0} ({1}) bağlantısı reddedildi.",
+                    "Connection from {0} ({1}) denied."
                 } },
             { "log.vd_failed",        new[]
                 {

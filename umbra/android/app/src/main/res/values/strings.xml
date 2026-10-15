@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Umbra</string>
+    <string name="subtitle">yerel ağdaki bilgisayarlar</string>
+    <string name="scan">Ağda ara</string>
+    <string name="scanning">Aranıyor…</string>
+    <string name="found">%1$d bilgisayar bulundu</string>
+    <string name="none_found">Yayını açık bir bilgisayar bulunamadı. Umbra\'da yayını başlatın ve aynı Wi-Fi ağında olduğunuzdan emin olun.</string>
+</resources>

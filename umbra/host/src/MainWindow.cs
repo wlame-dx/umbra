@@ -34,6 +34,9 @@ namespace Umbra
         private bool _vdCreated;
         private bool _vdWanted;
         private bool _autoConfirm;
+        private DiscoveryResponder _discovery;
+        private readonly object _approvalGate = new object();
+        private readonly HashSet<string> _approvalRequested = new HashSet<string>();
 
         private FrameworkElement _root;
         private Border _rootBorder;
@@ -55,6 +58,7 @@ namespace Umbra
         private TextBlock _scaleValue;
         private ToggleButton _inputSwitch;
         private ToggleButton _vdSwitch;
+        private ToggleButton _approvalSwitch;
         private Button _btnGetDriver;
         private TextBox _portBox;
         private Button _startButton;
@@ -139,6 +143,7 @@ namespace Umbra
             _scaleValue = Find<TextBlock>("ScaleValue");
             _inputSwitch = Find<ToggleButton>("InputSwitch");
             _vdSwitch = Find<ToggleButton>("VdSwitch");
+            _approvalSwitch = Find<ToggleButton>("ApprovalSwitch");
             _btnGetDriver = Find<Button>("BtnGetDriver");
             _portBox = Find<TextBox>("PortBox");
             _startButton = Find<Button>("BtnStart");
@@ -164,6 +169,7 @@ namespace Umbra
             _scale.ValueChanged += delegate { _scaleValue.Text = _scale.Value.ToString("0.00", CultureInfo.InvariantCulture); PushSettings(); };
             _inputSwitch.Click += delegate { PushSettings(); };
             if (_vdSwitch != null) _vdSwitch.Click += delegate { PushSettings(); };
+            if (_approvalSwitch != null) _approvalSwitch.Click += delegate { PushSettings(); };
             if (_btnGetDriver != null) _btnGetDriver.Click += delegate { DownloadDriver(); };
             _modeCombo.SelectionChanged += delegate { PushSettings(); };
             _monitorCombo.SelectionChanged += OnMonitorChanged;
@@ -178,6 +184,7 @@ namespace Umbra
             _langCombo.SelectionChanged += OnLanguageChanged;
 
             _service.Preview += OnPreview;
+            _service.Hub.Added += OnSessionAdded;
             Log.Line += OnLogLine;
 
             ApplyLanguage();
@@ -391,6 +398,7 @@ namespace Umbra
             SetText("LblControlTitle", "control.title");
             SetText("LblInputLabel", "control.input");
             SetText("LblVdLabel", "control.vd");
+            SetText("LblApprovalLabel", "control.approval");
             SetContent("BtnGetDriver", "control.getdriver");
             SetText("LblDriverHint", "control.driver_hint");
             SetText("LblModeLabel", "control.mode");
@@ -527,6 +535,7 @@ namespace Umbra
             settings.AllowInput = _inputSwitch.IsChecked == true;
             settings.InputMode = _modeCombo.SelectedIndex == 1 ? "mouse" : "touch";
             settings.AutoVd = _vdSwitch == null || _vdSwitch.IsChecked == true;
+            settings.RequireApproval = _approvalSwitch == null || _approvalSwitch.IsChecked == true;
         }
 
         private void ToggleStreaming()
@@ -580,6 +589,9 @@ namespace Umbra
                 _service.Start();
                 _running = true;
                 UpdateStatus();
+
+                // Yerel agda gorunurluk: yayin acikken istemciler bizi bulabilir.
+                StartDiscovery();
 
                 Log.Info(I18n.F("log.start", NetUtil.GetLanIPv4(), port));
 
@@ -752,6 +764,8 @@ namespace Umbra
                 catch (Exception ex) { Log.Warn("Sunucu durdurulamadi: " + ex.Message); }
                 _serverPort = -1;
 
+                StopDiscovery();
+
                 try { _injector.ReleaseAll(); } catch { }
 
                 // Sanal ekrani arka planda kaldir; arayuz donmasin.
@@ -797,6 +811,124 @@ namespace Umbra
                 port > 0 && port <= 65535)
                 return port;
             return 8777;
+        }
+
+        // ------------------------------------------------------------------
+        //  Yerel ag kesfi
+        // ------------------------------------------------------------------
+
+        private void StartDiscovery()
+        {
+            if (_discovery != null) return;
+            _discovery = new DiscoveryResponder(DiscoveryPayload);
+            _discovery.Start();
+        }
+
+        private void StopDiscovery()
+        {
+            if (_discovery == null) return;
+            try { _discovery.Stop(); } catch { }
+            _discovery = null;
+        }
+
+        /// <summary>Kesif paketine verilecek yanit; yayin kapaliysa null.</summary>
+        private string DiscoveryPayload()
+        {
+            if (!_running) return null;
+            int port = _serverPort > 0 ? _serverPort : ParsePort();
+            var map = new Dictionary<string, object>();
+            map["umbra"] = "host";
+            map["v"] = 1;
+            map["name"] = Environment.MachineName;
+            map["port"] = port;
+            map["os"] = "Windows";
+            map["streaming"] = true;
+            return _json.Serialize(map);
+        }
+
+        // ------------------------------------------------------------------
+        //  Baglanti onayi
+        // ------------------------------------------------------------------
+
+        private void OnSessionAdded(ClientSession session)
+        {
+            if (!_service.Settings.RequireApproval)
+            {
+                ApproveSession(session, false);
+                return;
+            }
+
+            // Istemci tanitimini hemen gonderir; gonderemezse kisa sure sonra
+            // eldeki bilgiyle onay istenir.
+            var waiter = new Thread(delegate()
+            {
+                try { Thread.Sleep(2500); } catch { }
+                RequestApproval(session);
+            });
+            waiter.IsBackground = true;
+            waiter.Name = "umbra-approve-wait";
+            waiter.Start();
+        }
+
+        private void RequestApproval(ClientSession session)
+        {
+            if (!session.Alive || session.Approved) return;
+
+            lock (_approvalGate)
+            {
+                if (!_approvalRequested.Add(session.Id)) return;
+            }
+
+            var app = Application.Current;
+            if (app == null) { DenySession(session); return; }
+
+            try
+            {
+                app.Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    if (!session.Alive || session.Approved) return;
+                    if (ShowApprovalDialog(session)) ApproveSession(session, true);
+                    else DenySession(session);
+                }));
+            }
+            catch
+            {
+                DenySession(session);
+            }
+        }
+
+        private bool ShowApprovalDialog(ClientSession session)
+        {
+            if (_autoConfirm) return true;
+
+            var lines = new List<string>();
+            if (session.DeviceName.Length > 0) lines.Add(I18n.F("dlg.conn_name", session.DeviceName));
+            if (session.DeviceModel.Length > 0 && !string.Equals(session.DeviceModel, session.DeviceName, StringComparison.Ordinal))
+                lines.Add(I18n.F("dlg.conn_model", session.DeviceModel));
+            if (session.DevicePlatform.Length > 0) lines.Add(I18n.F("dlg.conn_platform", session.DevicePlatform));
+            if (session.DeviceOs.Length > 0 && !string.Equals(session.DeviceOs, session.DevicePlatform, StringComparison.Ordinal))
+                lines.Add(I18n.F("dlg.conn_os", session.DeviceOs));
+            if (lines.Count == 0) lines.Add(I18n.T("dlg.conn_unknown"));
+            lines.Add(I18n.F("dlg.conn_ip", session.RemoteIP.Length > 0 ? session.RemoteIP : "?"));
+
+            return UmbDialog.ConfirmManyTimed(this, I18n.T("dlg.conn_title"),
+                I18n.T("dlg.conn_allow"), lines, 30000);
+        }
+
+        private void ApproveSession(ClientSession session, bool showLog)
+        {
+            if (!session.Alive) return;
+            session.Approved = true;
+            try { session.SendText(_service.BuildHello()); } catch { }
+            if (showLog) Log.Info(I18n.F("log.conn_allowed", session.Describe(), session.RemoteIP));
+        }
+
+        private void DenySession(ClientSession session)
+        {
+            try { session.SendText("{\"t\":\"denied\"}"); } catch { }
+            Log.Info(I18n.F("log.conn_denied", session.Describe(), session.RemoteIP));
+            try { _service.Hub.Remove(session); } catch { }
+            try { session.Close(); } catch { }
         }
 
         // ------------------------------------------------------------------
@@ -858,6 +990,14 @@ namespace Umbra
                         settings.InputMode = mode;
                         SyncUiFromSettings();
                     }
+                }
+                else if (kind == "identify")
+                {
+                    session.DeviceName = GetString(message, "name");
+                    session.DeviceModel = GetString(message, "model");
+                    session.DevicePlatform = GetString(message, "platform");
+                    session.DeviceOs = GetString(message, "os");
+                    if (_service.Settings.RequireApproval) RequestApproval(session);
                 }
                 else if (kind == "ping")
                 {
@@ -939,6 +1079,7 @@ namespace Umbra
             try { _injector.ReleaseAll(); } catch { }
             try { _service.Stop(); } catch { }
             try { if (_server != null) _server.Stop(); } catch { }
+            StopDiscovery();
 
             // Kapanirken sanal ekrani da temizle (beklemeden).
             if (_vdCreated)

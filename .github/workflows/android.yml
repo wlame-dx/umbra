@@ -1,0 +1,35 @@
+name: Android APK
+
+# Android istemci dosyalari degistiginde APK'yı derler ve artefakt olarak yukler.
+# Etiket (v*) push edilince Release isini release.yml yapar.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "umbra/android/**"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: APK derle
+        working-directory: umbra/android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Artifakt olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: umbra-android-debug
+          path: umbra/android/app/build/outputs/apk/debug/*.apk

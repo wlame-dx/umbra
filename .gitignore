@@ -2,6 +2,15 @@
 umbra/host/dist/
 umbra/host/build/
 
+# Android derleme çıktıları
+umbra/android/.gradle/
+umbra/android/build/
+umbra/android/app/build/
+umbra/android/local.properties
+umbra/android/.idea/
+*.apk
+*.aab
+
 # Üretilen dosyalar
 umbra/host/tools/*.exe
 umbra/setup/BuildInfo.g.cs

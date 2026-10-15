@@ -147,5 +147,11 @@ namespace Umbra
             WriteFrame(new byte[] { 0x03, 0xE8 }, OP_CLOSE);
             try { _stream.Flush(); } catch { }
         }
+
+        /// <summary>Bekleyen okumayi da serbest birakmak icin alt soketi kapatir.</summary>
+        public void Abort()
+        {
+            try { _stream.Close(); } catch { }
+        }
     }
 }

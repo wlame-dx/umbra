@@ -37,6 +37,8 @@
 
   var ws = null;
   var connected = false;
+  var approved = false;
+  var denied = false;
   var naturalW = 1920;
   var naturalH = 1080;
   var fit = "contain";
@@ -59,6 +61,8 @@
     tr: {
       "title": "Umbra · İkinci Ekran",
       "overlay.connecting": "Sunucuya bağlanılıyor…",
+      "overlay.waiting": "Bağlantı onayı bekleniyor…",
+      "overlay.denied": "Bağlantı bilgisayardan reddedildi.",
       "overlay.disconnected": "Bağlantı kesildi. Yeniden deneniyor…",
       "retry": "Yeniden dene",
       "state.connected": "Bağlı",
@@ -99,6 +103,8 @@
     en: {
       "title": "Umbra · Second Screen",
       "overlay.connecting": "Connecting to the server…",
+      "overlay.waiting": "Waiting for approval on the PC…",
+      "overlay.denied": "The connection was denied on the PC.",
       "overlay.disconnected": "Connection lost. Retrying…",
       "retry": "Retry",
       "state.connected": "Connected",
@@ -218,24 +224,56 @@
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function () {
-      setState("on");
-      overlay.classList.add("hidden");
-      lastTs = Date.now();
-      send({ t: "mode", m: controlMode });
-      startTimers();
+      approved = false;
+      overlay.classList.remove("hidden");
+      overlayText.textContent = t("overlay.waiting");
+      var d = deviceInfo();
+      send({ t: "identify", name: d.name, model: d.model, platform: d.platform, os: d.os });
     };
 
     socket.onclose = function () {
       if (ws !== socket) return;
+      approved = false;
       setState("off");
       stopTimers();
       overlay.classList.remove("hidden");
-      overlayText.textContent = t("overlay.disconnected");
-      setTimeout(connect, 1500);
+      if (denied) {
+        overlayText.textContent = t("overlay.denied");
+      } else {
+        overlayText.textContent = t("overlay.disconnected");
+        setTimeout(connect, 1500);
+      }
     };
 
     socket.onerror = function () { /* onclose devralır */ };
     socket.onmessage = onMessage;
+  }
+
+  function deviceInfo() {
+    var info = { name: "", model: "", platform: "", os: "" };
+    try {
+      var p = new URLSearchParams(location.search);
+      info.name = p.get("dname") || "";
+      info.model = p.get("dmodel") || "";
+      info.platform = p.get("dplatform") || "";
+      info.os = p.get("dos") || "";
+    } catch (e) { }
+    if (!info.platform) info.platform = "Web";
+    if (!info.name) info.name = "Web browser";
+    if (!info.model) info.model = navigator.platform || "";
+    if (!info.os) info.os = navigator.userAgent || "";
+    return info;
+  }
+
+  function onApproved() {
+    if (approved) return;
+    approved = true;
+    denied = false;
+    setState("on");
+    overlay.classList.add("hidden");
+    lastTs = Date.now();
+    send({ t: "mode", m: controlMode });
+    startTimers();
   }
 
   function onMessage(event) {
@@ -260,6 +298,13 @@
       if (msg.w) naturalW = msg.w;
       if (msg.h) naturalH = msg.h;
       updateResolution();
+      onApproved();
+    } else if (msg.t === "denied") {
+      denied = true;
+      setState("off");
+      stopTimers();
+      overlay.classList.remove("hidden");
+      overlayText.textContent = t("overlay.denied");
     } else if (msg.t === "pong") {
       latency = Math.max(0, Date.now() - msg.ts);
     }
@@ -530,6 +575,7 @@
   bindSlider(sSlider, sVal, function (v) { return parseFloat(v).toFixed(2); }, "scale");
 
   retry.addEventListener("click", function () {
+    denied = false;
     overlayText.textContent = t("overlay.connecting");
     connect();
   });

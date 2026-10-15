@@ -217,6 +217,20 @@ namespace Umbra
             try { Owner = owner; } catch { }
         }
 
+        /// <summary>Verilen sure sonunda pencereyi "reddet" olarak kapatir.</summary>
+        private void AutoCloseDeny(int ms)
+        {
+            var timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(ms);
+            timer.Tick += delegate
+            {
+                timer.Stop();
+                _result = false;
+                try { Close(); } catch { }
+            };
+            Loaded += delegate { timer.Start(); };
+        }
+
         // ------------------------------------------------------------------
         //  Statik yardimcilar
         // ------------------------------------------------------------------
@@ -239,6 +253,19 @@ namespace Umbra
             dialog.SetTitle(title);
             dialog.SetBodyLines(lines);
             dialog.SetActionButtons(confirmText, true, null, null);
+            dialog.ShowDialog();
+            return dialog._result;
+        }
+
+        /// <summary>ConfirmMany gibi; verilen sure icinde yanit gelmezse reddeder.</summary>
+        public static bool ConfirmManyTimed(Window owner, string title, string confirmText, IEnumerable<string> lines, int timeoutMs)
+        {
+            var dialog = new UmbDialog();
+            dialog.PlaceOwner(owner);
+            dialog.SetTitle(title);
+            dialog.SetBodyLines(lines);
+            dialog.SetActionButtons(confirmText, true, null, null);
+            if (timeoutMs > 0) dialog.AutoCloseDeny(timeoutMs);
             dialog.ShowDialog();
             return dialog._result;
         }

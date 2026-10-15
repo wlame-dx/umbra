@@ -26,7 +26,6 @@ namespace Umbra
 
         public StreamingService()
         {
-            Hub.Added += OnClientAdded;
         }
 
         public bool IsRunning { get { return _running; } }
@@ -34,12 +33,8 @@ namespace Umbra
         public int FrameWidth { get { return _frameWidth; } }
         public int FrameHeight { get { return _frameHeight; } }
 
-        private void OnClientAdded(ClientSession session)
-        {
-            session.SendText(BuildHello());
-        }
-
-        private string BuildHello()
+        /// <summary>Onaylanan istemciye gonderilecek tanitim mesaji.</summary>
+        public string BuildHello()
         {
             return "{\"t\":\"hello\",\"app\":\"Umbra\",\"w\":" + _frameWidth + ",\"h\":" + _frameHeight + "}";
         }
@@ -81,6 +76,8 @@ namespace Umbra
         {
             var stopwatch = new Stopwatch();
             long lastPreview = 0;
+            int lastW = -1;
+            int lastH = -1;
 
             while (_running)
             {
@@ -102,6 +99,13 @@ namespace Umbra
                 {
                     _frameWidth = _capture.Width;
                     _frameHeight = _capture.Height;
+
+                    if (_frameWidth != lastW || _frameHeight != lastH)
+                    {
+                        lastW = _frameWidth;
+                        lastH = _frameHeight;
+                        Hub.BroadcastText(BuildHello());
+                    }
 
                     long now = Environment.TickCount;
                     if (now - lastPreview >= 200)

@@ -510,6 +510,10 @@
                         Content="Sanal ekran s&#xFC;r&#xFC;c&#xFC;s&#xFC;n&#xFC; indir" />
                 <TextBlock x:Name="LblDriverHint" Foreground="{StaticResource TextMuted}" FontSize="10.5" TextWrapping="Wrap" Margin="2,6,0,0"
                            Text="S&#xFC;r&#xFC;c&#xFC; dosyalar&#x131; yoksa buradan indirin. Kurulumu yay&#x131;n ba&#x15F;larken Umbra yapar." />
+                <Grid Margin="0,14,0,0">
+                  <TextBlock x:Name="LblApprovalLabel" Text="Yeni ba&#x11F;lant&#x131;lar&#x131; onayla" Foreground="{StaticResource TextPrimary}" FontSize="12.5" VerticalAlignment="Center" TextWrapping="Wrap" />
+                  <ToggleButton x:Name="ApprovalSwitch" Style="{StaticResource Switch}" HorizontalAlignment="Right" VerticalAlignment="Center" IsChecked="True" />
+                </Grid>
                 <TextBlock x:Name="LblModeLabel" Style="{StaticResource FieldLabel}" Text="Girdi kipi" Margin="2,14,0,5" />
                 <ComboBox x:Name="ModeCombo" Style="{StaticResource DarkCombo}" SelectedIndex="0">
                   <ComboBoxItem Content="Dokunmatik (&#xE7;oklu parmak)" />

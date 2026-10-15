@@ -151,19 +151,55 @@ Host çalışırken adresi aç (`http://<ip>:8777/`). Web istemcisi:
   tarayıcıda `localStorage`'a yazılır.
 - "Ana ekrana ekle" ile Android/iOS'te tam ekranlı uygulama gibi kullanılabilir.
 
+## Android istemcisi
+
+Yerel ağdaki yayını açık bilgisayarları otomatik bulur; IP yazmaya gerek yok.
+
+- Uygulama açılınca `255.255.255.255:8778` adresine keşif paketi yollar; **yayını açık**
+  Umbra bilgisayarları kendilerini tanıtır ve listede görünür.
+- Bir bilgisayara dokununca bağlanır; bağlantı **bilgisayarda onaylanır** (aşağıya bak).
+- Görüntüleyici, host'un sunduğu web istemcisini gömer; dokunmatik kontrol, klavye ve
+  kalite ayarları aynen çalışır.
+- Cihaz bilgisi (marka/model, Android sürümü) onay penceresinde gösterilsin diye host'a iletilir.
+
+APK'yı GitHub Actions derler (yerelde Android SDK gerekmez):
+
+```
+.github/workflows/android.yml   main'e android/ değişikliği gelince APK üretir (artefakt)
+.github/workflows/release.yml   v* etiketinde APK'yı da Release'e ekler
+```
+
+Elle derlemek istersen: `cd umbra/android && ./gradlew assembleDebug` (JDK 17 + Android SDK 34).
+
+### Bağlantı onayı
+
+**UZAKTAN KONTROL** kartındaki **"Yeni bağlantıları onayla"** anahtarı açıkken (varsayılan),
+yeni bir istemci bağlanmaya çalışınca bilgisayarda cihaz adı, modeli, platformu ve IP adresiyle
+bir onay penceresi açılır. İzin verirsen yayın başlar; reddedersen istemci bağlanamaz.
+35 saniye yanıt gelmezse istek otomatik reddedilir.
+
 ## Protokol (kısa özet)
 
 | Yön | Tür | İçerik |
 |-----|-----|--------|
-| sunucu → istemci | text | `{"t":"hello","w":..,"h":..}` bağlanınca |
+| sunucu → istemci | text | `{"t":"hello","w":..,"h":..}` **bağlantı onaylanınca** |
+| sunucu → istemci | text | `{"t":"denied"}` bağlantı reddedilince |
 | sunucu → istemci | binary | JPEG kare |
 | sunucu → istemci | text | `{"t":"pong","ts":..}` ping yanıtı |
+| istemci → sunucu | text | `{"t":"identify","name":..,"model":..,"platform":..,"os":..}` bağlanınca |
 | istemci → sunucu | text | `{"t":"p","a":"down|move|up","x":..,"y":..,"b":..,"id":..}` |
 | istemci → sunucu | text | `{"t":"wheel","d":..,"x":..,"y":..}` |
 | istemci → sunucu | text | `{"t":"key","a":"down|up","code":..,"key":..}` |
 | istemci → sunucu | text | `{"t":"mode","m":"touch|mouse"}` |
 | istemci → sunucu | text | `{"t":"ping","ts":..}` |
 | istemci → sunucu | text | `{"t":"set","quality":..,"fps":..,"scale":..}` |
+
+### Keşif (UDP)
+
+| Yön | Port | İçerik |
+|-----|------|--------|
+| istemci → yayın | 8778/udp | `{"umbra":"discover","v":1}` |
+| sunucu → istemci | 8778/udp | `{"umbra":"host","v":1,"name":..,"port":..,"os":"Windows","streaming":true}` |
 
 ## Proje yapısı
 
@@ -179,6 +215,7 @@ umbra/
     package.ps1         kurulum + portable paketleme
     run.ps1             çalıştırma
     tools/              doğrulama araçları (UI önizleme, ağ/test istemcileri, simge üretimi)
+  android/              Android istemci (Kotlin; keşif + onay + görüntüleyici, Actions derler)
   setup/                kurulum aracının kaynağı (C# / WPF)
   site/                 tanıtım sitesi (GitHub Pages, TR/EN)
 ```
@@ -186,7 +223,7 @@ umbra/
 ## Yol haritası
 
 - [ ] Kendi imzalı IDD sürücüsü (sanal monitörü Umbra'nın kendisi sürücü olarak oluştursun)
-- [ ] Android APK istemcisi
+- [x] Android APK istemcisi (yerel keşif + onay) — GitHub Actions derler
 - [ ] Ses aktarımı
 - [ ] Çoklu istemci için oturum/kimlik doğrulama
 

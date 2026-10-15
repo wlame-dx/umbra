@@ -16,6 +16,18 @@ namespace Umbra
         public volatile bool Alive = true;
         public long BytesSent;
 
+        /// <summary>Istekte bulunan cihazin IP adresi (onay penceresinde gosterilir).</summary>
+        public string RemoteIP = "";
+
+        /// <summary>Istemcinin gonderdigi tanitim bilgileri.</summary>
+        public string DeviceName = "";
+        public string DeviceModel = "";
+        public string DevicePlatform = "";
+        public string DeviceOs = "";
+
+        /// <summary>Baglanti onaylandi mi? Onaylanmayan istemcilere hic kare gitmez.</summary>
+        public volatile bool Approved;
+
         public ClientSession(WsConnection connection)
         {
             _connection = connection;
@@ -24,10 +36,20 @@ namespace Umbra
 
         public WsConnection Connection { get { return _connection; } }
 
+        /// <summary>Istekte bulunan cihaz icin kisa bir etiket.</summary>
+        public string Describe()
+        {
+            string name = DeviceModel;
+            if (string.IsNullOrEmpty(name)) name = DeviceName;
+            if (string.IsNullOrEmpty(name)) name = DevicePlatform;
+            if (string.IsNullOrEmpty(name)) name = "?";
+            return name;
+        }
+
         /// <summary>En son kareyi kuyruga koyar. Yavas istemcilerde eski kareler atilir.</summary>
         public void QueueFrame(byte[] jpeg)
         {
-            if (!Alive || jpeg == null) return;
+            if (!Alive || !Approved || jpeg == null) return;
             lock (_gate)
             {
                 _pending = jpeg;
@@ -73,6 +95,8 @@ namespace Umbra
             Alive = false;
             try { _signal.Release(); } catch { }
             _connection.Close();
+            // Okuma dongusu hala beklemede olabilir; soketi kapatip serbest birak.
+            _connection.Abort();
         }
     }
 
@@ -111,7 +135,10 @@ namespace Umbra
         {
             ClientSession[] snapshot;
             lock (_gate) snapshot = _clients.ToArray();
-            foreach (var client in snapshot) client.SendText(text);
+            foreach (var client in snapshot)
+            {
+                if (client.Approved) client.SendText(text);
+            }
         }
 
         public void CloseAll()
