@@ -15,7 +15,7 @@ namespace Umbra
         internal static int TestAutoCloseMs = 0;
 
         private bool _result;
-        private Grid _body;
+        private StackPanel _body;
         private Grid _panel;
         private TextBlock _title;
 
@@ -64,7 +64,8 @@ namespace Umbra
             _panel = panel;
 
             panel.Children.Add(BuildHeader());
-            _body = new Grid();
+            _body = new StackPanel();
+            _body.Orientation = Orientation.Vertical;
             _body.Margin = new Thickness(20, 2, 20, 4);
             Grid.SetRow(_body, 1);
             panel.Children.Add(_body);
@@ -181,28 +182,31 @@ namespace Umbra
             _body.Children.Clear();
             foreach (string line in lines)
             {
-                var wrap = new TextBlock();
-                wrap.TextWrapping = TextWrapping.Wrap;
-                wrap.Margin = new Thickness(0, 0, 0, 8);
-                wrap.LineHeight = 20;
-
-                var inlineStack = new StackPanel();
-                inlineStack.Orientation = Orientation.Horizontal;
+                // Iki sutunlu izgara: madde isareti + sarilan metin. Yatay StackPanel
+                // kullanilirsa metin sinirsiz genislikte olculur ve hic sarmaz.
+                var row = new Grid();
+                row.Margin = new Thickness(0, 0, 0, 8);
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
                 var bullet = new TextBlock();
-                bullet.Text = "\u2022  ";
+                bullet.Text = "\u2022";
                 bullet.Foreground = new SolidColorBrush(Color.FromRgb(0xD9, 0xA4, 0x41));
                 bullet.FontSize = 12.5;
+                bullet.Margin = new Thickness(0, 0, 8, 0);
+                Grid.SetColumn(bullet, 0);
+                row.Children.Add(bullet);
 
                 var item = new TextBlock();
                 item.Text = line;
                 item.Foreground = new SolidColorBrush(Color.FromRgb(0xCD, 0xD3, 0xDB));
                 item.FontSize = 12.5;
                 item.TextWrapping = TextWrapping.Wrap;
+                item.LineHeight = 20;
+                Grid.SetColumn(item, 1);
+                row.Children.Add(item);
 
-                inlineStack.Children.Add(bullet);
-                inlineStack.Children.Add(item);
-                _body.Children.Add(inlineStack);
+                _body.Children.Add(row);
             }
         }
 
